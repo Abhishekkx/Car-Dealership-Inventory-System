@@ -2,6 +2,7 @@ import express from "express";
 import cors from "cors";
 import mongoose from "mongoose";
 import authRouter from "./routes/authRoutes";
+import vehicleRouter from "./routes/vehicleRoutes";
 
 const app = express();
 
@@ -20,5 +21,6 @@ app.get("/api/health", (_req, res) => {
 });
 
 app.use("/api/auth", authRouter);
+app.use("/api/vehicles", vehicleRouter);
 
 export default app;
