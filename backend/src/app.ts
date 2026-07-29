@@ -1,6 +1,7 @@
 import express from "express";
 import cors from "cors";
 import mongoose from "mongoose";
+import authRouter from "./routes/authRoutes";
 
 const app = express();
 
@@ -17,5 +18,7 @@ app.get("/api/health", (_req, res) => {
     database: dbStatus,
   });
 });
+
+app.use("/api/auth", authRouter);
 
 export default app;
