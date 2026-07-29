@@ -1,5 +1,6 @@
 import { Response } from "express";
-import { Vehicle } from "../models/Vehicle";
+import { FilterQuery } from "mongoose";
+import { IVehicle, Vehicle } from "../models/Vehicle";
 import { AuthenticatedRequest } from "../middleware/authMiddleware";
 
 function toVehicleResponse(vehicle: {
@@ -65,6 +66,43 @@ export async function listVehicles(
     });
   } catch {
     res.status(500).json({ message: "Failed to list vehicles" });
+  }
+}
+
+export async function searchVehicles(
+  req: AuthenticatedRequest,
+  res: Response
+): Promise<void> {
+  try {
+    const { make, model, category, minPrice, maxPrice } = req.query;
+    const filter: FilterQuery<IVehicle> = {};
+
+    if (typeof make === "string" && make.trim()) {
+      filter.make = new RegExp(make.trim(), "i");
+    }
+    if (typeof model === "string" && model.trim()) {
+      filter.model = new RegExp(model.trim(), "i");
+    }
+    if (typeof category === "string" && category.trim()) {
+      filter.category = new RegExp(category.trim(), "i");
+    }
+
+    if (minPrice !== undefined || maxPrice !== undefined) {
+      filter.price = {};
+      if (minPrice !== undefined) {
+        filter.price.$gte = Number(minPrice);
+      }
+      if (maxPrice !== undefined) {
+        filter.price.$lte = Number(maxPrice);
+      }
+    }
+
+    const vehicles = await Vehicle.find(filter).sort({ createdAt: -1 });
+    res.status(200).json({
+      vehicles: vehicles.map((vehicle) => toVehicleResponse(vehicle)),
+    });
+  } catch {
+    res.status(500).json({ message: "Failed to search vehicles" });
   }
 }
 
