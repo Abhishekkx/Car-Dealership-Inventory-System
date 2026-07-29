@@ -26,5 +26,32 @@ create only the foundation — no business features yet:
 
 Do not implement auth, vehicles, or inventory yet.
 ```
+**Outcome:** Generated the monorepo skeleton (`backend/`, `frontend/`), tooling configs, and base project structure.
 
-**Outcome:** Generated the monorepo skeleton (`backend/`, `frontend/`), tooling configs, health endpoint test, and base project structure.
+---
+
+## MongoDB connection
+
+**AI tool:** Cursor
+
+**Prompt Used:**
+```text
+Connect the backend to MongoDB using MONGODB_URI from .env.
+Add db config, connect on server startup, and a simple health check
+that reports database status.
+```
+
+**Outcome:** Added `config/db.ts`, startup Mongo connection, `/api/health` DB status, and a connection unit test.
+
+---
+
+## Auth register / login + JWT
+
+**AI tool:** Cursor
+
+**Prompt Used:**
+```text
+Implement Auth register/login + JWT
+```
+
+**Outcome:** Added User model, register/login endpoints, JWT signing on login, and auth tests (9 tests passing including DB).

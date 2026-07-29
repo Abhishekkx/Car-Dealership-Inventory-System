@@ -53,3 +53,4 @@ npm run dev
 ```
 ## AI Usage
 1. To create project skeleton 
+2. testing mongodb connection
