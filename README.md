@@ -94,6 +94,50 @@ npm run dev
 2. Users can search inventory and purchase when quantity is greater than zero.
 3. Admins also see add / update / delete / restock controls.
 
+## Screenshots
+
+### Login
+
+Sign-in screen with a full-page vehicle background, centered auth card, and password visibility toggle. Users can switch to Register from the same page.
+
+![Login page](docs/screenshots/login.png)
+
+### Inventory dashboard (admin)
+
+Admin showroom view with search filters (prices in ₹), Add vehicle form, and the available stock list with purchase, edit, delete, and restock actions.
+
+![Admin inventory dashboard](docs/screenshots/inventory1.png)
+
+### Available vehicles
+
+Vehicle cards showing category, price in Indian Rupees, stock level, and role-based actions for each car on the lot.
+
+![Available vehicles grid](docs/screenshots/inventory2.png)
+
+### Search and filter
+
+Filtering by any field (for example Make = Maruti) returns matching stock. Reset clears filters and restores the full lot.
+
+![Search inventory filters](docs/screenshots/search.png)
+
+### My purchases
+
+After a successful purchase, the buyer can open My purchases to see vehicle details, price in ₹, buyer identity, and purchase time.
+
+![My purchases view](docs/screenshots/purchase.png)
+
+### Admin inventory tools
+
+Admin controls for Search, Reset, Add vehicle, and managing each card (Purchase, Edit, Delete, Restock) with prices labeled in ₹.
+
+![Admin management tools](docs/screenshots/admin.png)
+
+### Purchases in MongoDB Atlas
+
+Purchase documents stored in the `car-dealership` database `purchases` collection, including buyer name/email, vehicle snapshot, price, and timestamp.
+
+![MongoDB Atlas purchases collection](docs/screenshots/purchases.png)
+
 ## Roles
 
 | Action | Normal user | Admin |
