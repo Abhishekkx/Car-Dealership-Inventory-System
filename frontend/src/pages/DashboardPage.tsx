@@ -1,4 +1,4 @@
-import { useEffect, useState, type FormEvent } from "react";
+import { useEffect, useState, type FormEvent, type ReactNode } from "react";
 import {
   api,
   type Purchase,
@@ -27,6 +27,42 @@ type DashboardView = "inventory" | "purchases";
 
 function stockPercent(quantity: number) {
   return Math.min(100, Math.max(8, (quantity / 20) * 100));
+}
+
+function Icon({
+  children,
+  size = 18,
+}: {
+  children: ReactNode;
+  size?: number;
+}) {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.9"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      {children}
+    </svg>
+  );
+}
+
+function CarMark({ size = 22 }: { size?: number }) {
+  return (
+    <Icon size={size}>
+      <path d="M5 17h14l-1.4-4.2a2 2 0 0 0-1.9-1.3H8.3a2 2 0 0 0-1.9 1.3L5 17Z" />
+      <path d="M7 11.5 8.2 8.2A1.5 1.5 0 0 1 9.6 7h4.8a1.5 1.5 0 0 1 1.4.8L17 11.5" />
+      <circle cx="8" cy="18.5" r="1.4" />
+      <circle cx="16" cy="18.5" r="1.4" />
+    </Icon>
+  );
 }
 
 export function DashboardPage() {
@@ -71,7 +107,8 @@ export function DashboardPage() {
         !result.vehicles.some((vehicle) => vehicle.id === editingId)
       ) {
         clearEdit();
-      }    } catch (err) {
+      }
+    } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to load vehicles");
     } finally {
       setLoading(false);
@@ -104,6 +141,18 @@ export function DashboardPage() {
   async function handleSearch(event: FormEvent) {
     event.preventDefault();
     await loadVehicles(filters);
+  }
+
+  async function clearFilters() {
+    const reset = {
+      make: "",
+      model: "",
+      category: "",
+      minPrice: "",
+      maxPrice: "",
+    };
+    setFilters(reset);
+    await loadVehicles(reset);
   }
 
   async function handleSaveVehicle(event: FormEvent) {
@@ -198,73 +247,80 @@ export function DashboardPage() {
       price: String(vehicle.price),
       quantity: String(vehicle.quantity),
     });
+    window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
   return (
     <div className="min-h-screen">
-      <header className="sticky top-0 z-20 border-b border-line/80 bg-white/85 backdrop-blur-md">
-        <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-4 sm:px-6">
-          <div className="animate-fade-in flex items-center gap-3">
-            <div className="hidden h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-ink text-accent sm:flex">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="22"
-                height="22"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="1.8"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <path d="M5 17h14l-1.4-4.2a2 2 0 0 0-1.9-1.3H8.3a2 2 0 0 0-1.9 1.3L5 17Z" />
-                <path d="M7 11.5 8.2 8.2A1.5 1.5 0 0 1 9.6 7h4.8a1.5 1.5 0 0 1 1.4.8L17 11.5" />
-                <circle cx="8" cy="18.5" r="1.4" />
-                <circle cx="16" cy="18.5" r="1.4" />
-              </svg>
+      <header className="dash-header sticky top-0 z-20">
+        <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-3.5 sm:px-6">
+          <div className="animate-fade-in flex min-w-0 items-center gap-3">
+            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-ink text-accent shadow-sm">
+              <CarMark size={22} />
             </div>
-            <div>
-              <p className="text-[11px] font-semibold uppercase tracking-[0.26em] text-accent">
-                Inventory
-              </p>
-              <h1 className="font-display text-lg leading-tight font-bold text-ink sm:text-2xl">
+            <div className="min-w-0">
+              <h1 className="font-display truncate text-base leading-tight font-semibold text-ink sm:text-xl">
                 Car Dealership Inventory System
               </h1>
+              <p className="mt-0.5 truncate text-xs text-slate sm:text-sm">
+                Welcome, {user?.name || user?.email}
+              </p>
             </div>
           </div>
-          <div className="flex items-center gap-3 text-sm sm:gap-4">
-            <div className="hidden text-right sm:block">
-              <p className="font-semibold text-ink">
-                {user?.name || user?.email}
+
+          <div className="flex min-w-0 items-center gap-2 sm:gap-3">
+            <div className="min-w-0 text-right">
+              <p className="truncate text-sm font-semibold text-ink">
+                {user?.name || "User"}
               </p>
-              <p className="capitalize text-slate">
-                {user?.role}
-                {user?.email ? ` · ${user.email}` : ""}
+              <p className="max-w-[140px] truncate text-[11px] text-slate sm:max-w-[220px] sm:text-xs">
+                {user?.email}
               </p>
             </div>
-            <span className="rounded-md border border-line bg-fog px-2.5 py-1 text-xs font-semibold uppercase tracking-wide text-steel sm:hidden">
+            <span
+              className={`role-badge ${
+                isAdmin ? "role-badge-admin" : "role-badge-user"
+              }`}
+            >
+              {isAdmin ? (
+                <Icon size={12}>
+                  <path d="M12 3 4 7v5c0 5 3.4 8.7 8 10 4.6-1.3 8-5 8-10V7l-8-4Z" />
+                </Icon>
+              ) : (
+                <Icon size={12}>
+                  <circle cx="12" cy="8" r="3.5" />
+                  <path d="M5 20a7 7 0 0 1 14 0" />
+                </Icon>
+              )}
               {user?.role}
             </span>
-            <button onClick={logout} className="btn-ghost">
-              Logout
+            <button onClick={logout} className="btn-ghost inline-flex items-center gap-2 px-3 py-2 sm:px-4">
+              <Icon size={16}>
+                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+                <polyline points="16 17 21 12 16 7" />
+                <line x1="21" y1="12" x2="9" y2="12" />
+              </Icon>
+              <span className="hidden sm:inline">Logout</span>
             </button>
           </div>
         </div>
       </header>
 
-      <main className="mx-auto max-w-6xl space-y-7 px-4 py-8 sm:px-6">
-        <section className="animate-fade-up flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+      <main className="mx-auto max-w-6xl space-y-6 px-4 py-7 sm:px-6 sm:py-8">
+        <section className="animate-fade-up flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
           <div>
-            <h2 className="font-display text-3xl font-bold text-ink sm:text-4xl">
+            <h2 className="font-display text-3xl font-semibold text-ink sm:text-4xl">
               {view === "inventory" ? "Showroom stock" : "Your purchases"}
             </h2>
             <p className="mt-2 max-w-xl text-sm text-slate sm:text-base">
               {view === "inventory"
-                ? "Search the lot, purchase available cars, and manage inventory with role-based controls."
-                : "A private history of vehicles you have purchased from the lot."}
+                ? isAdmin
+                  ? "Search, add, update, restock, and remove vehicles from inventory."
+                  : "Browse available vehicles and complete a purchase."
+                : "Track vehicles you have purchased from the lot."}
             </p>
           </div>
-          <div className="flex gap-2">
+          <div className="flex flex-wrap gap-2">
             <button
               type="button"
               onClick={() => setView("inventory")}
@@ -272,6 +328,12 @@ export function DashboardPage() {
                 view === "inventory" ? "view-tab-active" : "view-tab-idle"
               }`}
             >
+              <Icon size={16}>
+                <rect x="3" y="3" width="7" height="7" rx="1" />
+                <rect x="14" y="3" width="7" height="7" rx="1" />
+                <rect x="3" y="14" width="7" height="7" rx="1" />
+                <rect x="14" y="14" width="7" height="7" rx="1" />
+              </Icon>
               Inventory
             </button>
             <button
@@ -281,18 +343,24 @@ export function DashboardPage() {
                 view === "purchases" ? "view-tab-active" : "view-tab-idle"
               }`}
             >
+              <Icon size={16}>
+                <path d="M6 6h15l-1.5 9h-12z" />
+                <circle cx="9" cy="20" r="1" />
+                <circle cx="18" cy="20" r="1" />
+                <path d="M6 6 5 3H2" />
+              </Icon>
               My purchases
             </button>
           </div>
         </section>
 
         {error ? (
-          <p className="animate-fade-in rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-danger">
+          <p className="animate-fade-in rounded-lg border border-red-200 bg-red-50 px-3 py-2.5 text-sm text-danger">
             {error}
           </p>
         ) : null}
         {message ? (
-          <p className="animate-fade-in rounded-md border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm text-success">
+          <p className="animate-fade-in rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2.5 text-sm text-success">
             {message}
           </p>
         ) : null}
@@ -301,133 +369,184 @@ export function DashboardPage() {
           <>
             <form
               onSubmit={handleSearch}
-              className="animate-fade-up surface grid gap-3 rounded-xl p-4 sm:grid-cols-2 lg:grid-cols-6"
+              className="animate-fade-up surface space-y-3 rounded-2xl p-4 sm:p-5"
             >
-              <input
-                placeholder="Make"
-                value={filters.make}
-                onChange={(e) => setFilters({ ...filters, make: e.target.value })}
-                className="input-field"
-              />
-              <input
-                placeholder="Model"
-                value={filters.model}
-                onChange={(e) =>
-                  setFilters({ ...filters, model: e.target.value })
-                }
-                className="input-field"
-              />
-              <input
-                placeholder="Category"
-                value={filters.category}
-                onChange={(e) =>
-                  setFilters({ ...filters, category: e.target.value })
-                }
-                className="input-field"
-              />
-              <input
-                placeholder="Min price"
-                type="number"
-                value={filters.minPrice}
-                onChange={(e) =>
-                  setFilters({ ...filters, minPrice: e.target.value })
-                }
-                className="input-field"
-              />
-              <input
-                placeholder="Max price"
-                type="number"
-                value={filters.maxPrice}
-                onChange={(e) =>
-                  setFilters({ ...filters, maxPrice: e.target.value })
-                }
-                className="input-field"
-              />
-              <button type="submit" className="btn-ink w-full">
-                Search
-              </button>
+              <div className="panel-title">
+                <span className="icon-chip">
+                  <Icon size={16}>
+                    <circle cx="11" cy="11" r="7" />
+                    <path d="m20 20-3.5-3.5" />
+                  </Icon>
+                </span>
+                <div>
+                  <h3 className="font-semibold text-ink">Search inventory</h3>
+                  <p className="text-xs text-slate sm:text-sm">
+                    Filter by make, model, category, or price range.
+                  </p>
+                </div>
+              </div>
+              <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-6">
+                <input
+                  placeholder="Make"
+                  value={filters.make}
+                  onChange={(e) =>
+                    setFilters({ ...filters, make: e.target.value })
+                  }
+                  className="input-field"
+                />
+                <input
+                  placeholder="Model"
+                  value={filters.model}
+                  onChange={(e) =>
+                    setFilters({ ...filters, model: e.target.value })
+                  }
+                  className="input-field"
+                />
+                <input
+                  placeholder="Category"
+                  value={filters.category}
+                  onChange={(e) =>
+                    setFilters({ ...filters, category: e.target.value })
+                  }
+                  className="input-field"
+                />
+                <input
+                  placeholder="Min price"
+                  type="number"
+                  value={filters.minPrice}
+                  onChange={(e) =>
+                    setFilters({ ...filters, minPrice: e.target.value })
+                  }
+                  className="input-field"
+                />
+                <input
+                  placeholder="Max price"
+                  type="number"
+                  value={filters.maxPrice}
+                  onChange={(e) =>
+                    setFilters({ ...filters, maxPrice: e.target.value })
+                  }
+                  className="input-field"
+                />
+                <div className="flex gap-2">
+                  <button type="submit" className="btn-ink flex-1">
+                    Search
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => void clearFilters()}
+                    className="btn-ghost px-3"
+                    title="Clear filters"
+                  >
+                    <Icon size={16}>
+                      <path d="M3 6h18" />
+                      <path d="M8 6V4h8v2" />
+                      <path d="m19 6-1 14H6L5 6" />
+                    </Icon>
+                  </button>
+                </div>
+              </div>
             </form>
 
             {isAdmin ? (
               <form
                 onSubmit={handleSaveVehicle}
-                className="animate-fade-up surface grid gap-3 rounded-xl p-5 sm:grid-cols-2 lg:grid-cols-6"
+                className="animate-fade-up surface space-y-4 rounded-2xl p-4 sm:p-5"
               >
-                <div className="sm:col-span-2 lg:col-span-6">
-                  <h3 className="font-display text-2xl font-bold text-ink">
-                    {editingId ? "Update vehicle" : "Add vehicle"}
-                  </h3>
-                  <p className="mt-1 text-sm text-slate">
-                    Admin tools for stocking and correcting inventory records.
-                  </p>
+                <div className="panel-title">
+                  <span className="icon-chip">
+                    <Icon size={16}>
+                      <path d="M12 5v14" />
+                      <path d="M5 12h14" />
+                    </Icon>
+                  </span>
+                  <div>
+                    <h3 className="font-display text-xl font-semibold text-ink sm:text-2xl">
+                      {editingId ? "Update vehicle" : "Add vehicle"}
+                    </h3>
+                    <p className="text-sm text-slate">
+                      Admin tools for stocking and correcting inventory records.
+                    </p>
+                  </div>
                 </div>
-                <input
-                  required
-                  placeholder="Make"
-                  value={form.make}
-                  onChange={(e) => setForm({ ...form, make: e.target.value })}
-                  className="input-field"
-                />
-                <input
-                  required
-                  placeholder="Model"
-                  value={form.model}
-                  onChange={(e) => setForm({ ...form, model: e.target.value })}
-                  className="input-field"
-                />
-                <input
-                  required
-                  placeholder="Category"
-                  value={form.category}
-                  onChange={(e) =>
-                    setForm({ ...form, category: e.target.value })
-                  }
-                  className="input-field"
-                />
-                <input
-                  required
-                  type="number"
-                  min={0}
-                  step="1"
-                  placeholder="Price ($)"
-                  value={form.price}
-                  onChange={(e) => setForm({ ...form, price: e.target.value })}
-                  className="input-field"
-                />
-                <input
-                  required
-                  type="number"
-                  min={0}
-                  step="1"
-                  placeholder="Quantity"
-                  value={form.quantity}
-                  onChange={(e) =>
-                    setForm({ ...form, quantity: e.target.value })
-                  }
-                  className="input-field"
-                />
-                <div className="flex gap-2">
-                  <button type="submit" className="btn-primary flex-1">
-                    {editingId ? "Update" : "Add"}
-                  </button>
-                  {editingId ? (
-                    <button
-                      type="button"
-                      onClick={clearEdit}
-                      className="btn-ghost"
-                    >
-                      Cancel
+                <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-6">
+                  <input
+                    required
+                    placeholder="Make"
+                    value={form.make}
+                    onChange={(e) => setForm({ ...form, make: e.target.value })}
+                    className="input-field"
+                  />
+                  <input
+                    required
+                    placeholder="Model"
+                    value={form.model}
+                    onChange={(e) =>
+                      setForm({ ...form, model: e.target.value })
+                    }
+                    className="input-field"
+                  />
+                  <input
+                    required
+                    placeholder="Category"
+                    value={form.category}
+                    onChange={(e) =>
+                      setForm({ ...form, category: e.target.value })
+                    }
+                    className="input-field"
+                  />
+                  <input
+                    required
+                    type="number"
+                    min={0}
+                    step="1"
+                    placeholder="Price ($)"
+                    value={form.price}
+                    onChange={(e) =>
+                      setForm({ ...form, price: e.target.value })
+                    }
+                    className="input-field"
+                  />
+                  <input
+                    required
+                    type="number"
+                    min={0}
+                    step="1"
+                    placeholder="Quantity"
+                    value={form.quantity}
+                    onChange={(e) =>
+                      setForm({ ...form, quantity: e.target.value })
+                    }
+                    className="input-field"
+                  />
+                  <div className="flex gap-2">
+                    <button type="submit" className="btn-primary flex-1">
+                      {editingId ? "Update" : "Add"}
                     </button>
-                  ) : null}
+                    {editingId ? (
+                      <button
+                        type="button"
+                        onClick={clearEdit}
+                        className="btn-ghost"
+                      >
+                        Cancel
+                      </button>
+                    ) : null}
+                  </div>
                 </div>
               </form>
             ) : null}
 
             <section className="space-y-4">
               <div className="flex items-end justify-between gap-4">
-                <h3 className="font-display text-2xl font-bold text-ink sm:text-3xl">
-                  Available vehicles
-                </h3>
+                <div className="panel-title">
+                  <span className="icon-chip icon-chip-ink">
+                    <CarMark size={16} />
+                  </span>
+                  <h3 className="font-display text-2xl font-semibold text-ink sm:text-3xl">
+                    Available vehicles
+                  </h3>
+                </div>
                 <p className="rounded-full bg-fog px-3 py-1 text-sm text-slate">
                   {vehicles.length} shown
                 </p>
@@ -436,8 +555,11 @@ export function DashboardPage() {
               {loading ? (
                 <p className="text-slate">Loading inventory...</p>
               ) : vehicles.length === 0 ? (
-                <div className="surface rounded-xl p-10 text-center">
-                  <p className="font-display text-2xl font-bold text-ink">
+                <div className="surface empty-state">
+                  <span className="icon-chip mx-auto mb-3">
+                    <CarMark size={18} />
+                  </span>
+                  <p className="font-display text-2xl font-semibold text-ink">
                     Lot is empty
                   </p>
                   <p className="mt-2 text-sm text-slate">
@@ -452,18 +574,20 @@ export function DashboardPage() {
                     <article
                       key={vehicle.id}
                       className="vehicle-tile surface animate-fade-up space-y-4 p-5"
-                      style={{ animationDelay: `${Math.min(index, 6) * 40}ms` }}
+                      style={{
+                        animationDelay: `${Math.min(index, 6) * 40}ms`,
+                      }}
                     >
                       <div className="flex items-start justify-between gap-3">
                         <div>
-                          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-accent">
+                          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-accent">
                             {vehicle.category}
                           </p>
-                          <h4 className="font-display mt-1 text-2xl font-bold text-ink sm:text-3xl">
+                          <h4 className="font-display mt-1 text-2xl font-semibold text-ink sm:text-[1.7rem]">
                             {vehicle.make} {vehicle.model}
                           </h4>
                         </div>
-                        <p className="rounded-md bg-ink px-2.5 py-1 text-sm font-bold text-white">
+                        <p className="rounded-lg bg-ink px-2.5 py-1 text-sm font-bold text-white">
                           ${vehicle.price.toLocaleString()}
                         </p>
                       </div>
@@ -489,10 +613,6 @@ export function DashboardPage() {
                                 vehicle.quantity === 0
                                   ? "0%"
                                   : `${stockPercent(vehicle.quantity)}%`,
-                              background:
-                                vehicle.quantity === 0
-                                  ? "transparent"
-                                  : undefined,
                             }}
                           />
                         </div>
@@ -502,8 +622,13 @@ export function DashboardPage() {
                         <button
                           disabled={vehicle.quantity === 0}
                           onClick={() => void handlePurchase(vehicle.id)}
-                          className="btn-ink"
+                          className="btn-ink inline-flex items-center gap-2"
                         >
+                          <Icon size={15}>
+                            <path d="M6 6h15l-1.5 9h-12z" />
+                            <circle cx="9" cy="20" r="1" />
+                            <circle cx="18" cy="20" r="1" />
+                          </Icon>
                           Purchase
                         </button>
 
@@ -511,14 +636,23 @@ export function DashboardPage() {
                           <>
                             <button
                               onClick={() => startEdit(vehicle)}
-                              className="btn-ghost"
+                              className="btn-ghost inline-flex items-center gap-2"
                             >
+                              <Icon size={15}>
+                                <path d="M12 20h9" />
+                                <path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z" />
+                              </Icon>
                               Edit
                             </button>
                             <button
                               onClick={() => void handleDelete(vehicle.id)}
-                              className="rounded-md border border-red-200 px-4 py-2 text-danger hover:bg-red-50"
+                              className="btn-danger inline-flex items-center gap-2"
                             >
+                              <Icon size={15}>
+                                <path d="M3 6h18" />
+                                <path d="M8 6V4h8v2" />
+                                <path d="m19 6-1 14H6L5 6" />
+                              </Icon>
                               Delete
                             </button>
                             <div className="flex items-center gap-2">
@@ -537,8 +671,12 @@ export function DashboardPage() {
                               />
                               <button
                                 onClick={() => void handleRestock(vehicle.id)}
-                                className="btn-ghost"
+                                className="btn-ghost inline-flex items-center gap-2"
                               >
+                                <Icon size={15}>
+                                  <path d="M21 12a9 9 0 1 1-3-6.7" />
+                                  <polyline points="21 3 21 9 15 9" />
+                                </Icon>
                                 Restock
                               </button>
                             </div>
@@ -556,8 +694,15 @@ export function DashboardPage() {
             {loading ? (
               <p className="text-slate">Loading purchases...</p>
             ) : purchases.length === 0 ? (
-              <div className="surface rounded-xl p-10 text-center">
-                <p className="font-display text-2xl font-bold text-ink">
+              <div className="surface empty-state">
+                <span className="icon-chip mx-auto mb-3">
+                  <Icon size={18}>
+                    <path d="M6 6h15l-1.5 9h-12z" />
+                    <circle cx="9" cy="20" r="1" />
+                    <circle cx="18" cy="20" r="1" />
+                  </Icon>
+                </span>
+                <p className="font-display text-2xl font-semibold text-ink">
                   No purchases yet
                 </p>
                 <p className="mt-2 text-sm text-slate">
@@ -576,25 +721,42 @@ export function DashboardPage() {
                 {purchases.map((purchase, index) => (
                   <article
                     key={purchase.id}
-                    className="vehicle-tile surface animate-fade-up space-y-2 p-5"
-                    style={{ animationDelay: `${Math.min(index, 6) * 40}ms` }}
+                    className="vehicle-tile surface animate-fade-up space-y-3 p-5"
+                    style={{
+                      animationDelay: `${Math.min(index, 6) * 40}ms`,
+                    }}
                   >
-                    <p className="text-xs font-semibold uppercase tracking-[0.2em] text-accent">
-                      {purchase.category}
-                    </p>
-                    <h3 className="font-display text-2xl font-bold text-ink sm:text-3xl">
-                      {purchase.make} {purchase.model}
-                    </h3>
-                    <p className="text-sm text-slate">
-                      Bought by {purchase.buyerName} ({purchase.buyerEmail})
-                    </p>
-                    <p className="text-lg font-bold text-ink">
-                      ${purchase.price.toLocaleString()}
-                    </p>
-                    <p className="text-sm text-slate">
-                      Purchased on{" "}
-                      {new Date(purchase.purchasedAt).toLocaleString()}
-                    </p>
+                    <div className="flex items-start justify-between gap-3">
+                      <div>
+                        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-accent">
+                          {purchase.category}
+                        </p>
+                        <h3 className="font-display mt-1 text-2xl font-semibold text-ink sm:text-[1.7rem]">
+                          {purchase.make} {purchase.model}
+                        </h3>
+                      </div>
+                      <p className="rounded-lg bg-ink px-2.5 py-1 text-sm font-bold text-white">
+                        ${purchase.price.toLocaleString()}
+                      </p>
+                    </div>
+                    <div className="space-y-1.5 border-t border-line pt-3 text-sm text-slate">
+                      <p className="inline-flex items-center gap-2">
+                        <Icon size={14}>
+                          <circle cx="12" cy="8" r="3.5" />
+                          <path d="M5 20a7 7 0 0 1 14 0" />
+                        </Icon>
+                        {purchase.buyerName} ({purchase.buyerEmail})
+                      </p>
+                      <p className="inline-flex items-center gap-2">
+                        <Icon size={14}>
+                          <rect x="3" y="5" width="18" height="16" rx="2" />
+                          <path d="M3 10h18" />
+                          <path d="M8 3v4" />
+                          <path d="M16 3v4" />
+                        </Icon>
+                        {new Date(purchase.purchasedAt).toLocaleString()}
+                      </p>
+                    </div>
                   </article>
                 ))}
               </div>
