@@ -1,3 +1,7 @@
+/**
+ * Express application entry for the dealership API.
+ * Mounts health, auth, vehicle, and purchase routes.
+ */
 import express from "express";
 import cors from "cors";
 import mongoose from "mongoose";
@@ -10,6 +14,7 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+/** Liveness check including MongoDB connection state. */
 app.get("/api/health", (_req, res) => {
   const dbState = mongoose.connection.readyState;
   const dbStatus =

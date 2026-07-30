@@ -1,3 +1,6 @@
+/**
+ * Inventory vehicle: make, model, category, price, and quantity in stock.
+ */
 import mongoose, { Document, Schema } from "mongoose";
 
 export interface IVehicle extends Document {

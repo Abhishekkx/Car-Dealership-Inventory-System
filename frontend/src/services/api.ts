@@ -1,3 +1,7 @@
+/**
+ * Thin HTTP client for the dealership REST API.
+ * Attaches JWT Bearer tokens on protected calls.
+ */
 const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
 
 export type UserRole = "user" | "admin";
@@ -47,6 +51,7 @@ export interface Purchase {
   purchasedAt: string;
 }
 
+/** Shared fetch helper with JSON parsing and error message extraction. */
 async function request<T>(
   path: string,
   options: RequestInit = {},
@@ -77,6 +82,7 @@ async function request<T>(
   return data as T;
 }
 
+/** Typed endpoints used by auth and the inventory dashboard. */
 export const api = {
   register(name: string, email: string, password: string) {
     return request<{ user: User }>("/auth/register", {

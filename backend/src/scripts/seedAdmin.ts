@@ -1,3 +1,7 @@
+/**
+ * CLI seed: creates or upgrades the admin account from env credentials.
+ * Run with `npm run seed:admin`.
+ */
 import "dotenv/config";
 import bcrypt from "bcryptjs";
 import mongoose from "mongoose";

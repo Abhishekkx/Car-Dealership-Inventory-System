@@ -1,6 +1,10 @@
+/**
+ * JWT auth middleware: verifies Bearer tokens and enforces admin role.
+ */
 import { NextFunction, Request, Response } from "express";
 import jwt from "jsonwebtoken";
 
+/** Authenticated principal attached to protected requests. */
 export interface AuthUser {
   id: string;
   name: string;
@@ -19,6 +23,7 @@ interface TokenPayload {
   role: "user" | "admin";
 }
 
+/** Requires a valid JWT and sets `req.user`. */
 export function authenticate(
   req: AuthenticatedRequest,
   res: Response,
@@ -53,6 +58,7 @@ export function authenticate(
   }
 }
 
+/** Allows only users with role `admin` (use after `authenticate`). */
 export function requireAdmin(
   req: AuthenticatedRequest,
   res: Response,

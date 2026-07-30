@@ -1,8 +1,12 @@
+/**
+ * Auth handlers: register new buyers and issue JWTs on login.
+ */
 import { Request, Response } from "express";
 import bcrypt from "bcryptjs";
 import { User } from "../models/User";
 import { signToken } from "../utils/jwt";
 
+/** Creates a normal user account (role always `user`). */
 export async function register(req: Request, res: Response): Promise<void> {
   try {
     const { name, email, password } = req.body;
@@ -39,6 +43,7 @@ export async function register(req: Request, res: Response): Promise<void> {
   }
 }
 
+/** Validates credentials and returns a JWT plus public user profile. */
 export async function login(req: Request, res: Response): Promise<void> {
   try {
     const { email, password } = req.body;

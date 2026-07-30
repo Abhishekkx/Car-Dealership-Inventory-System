@@ -1,6 +1,10 @@
+/**
+ * Login / register screen with full-page rotating vehicle backgrounds.
+ */
 import { useEffect, useState, type FormEvent } from "react";
 import { useAuth } from "../services/auth";
 
+/** Soft-rotating Unsplash car images for the auth backdrop. */
 const BACKGROUND_IMAGES = [
   "https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=2000&q=80",
   "https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?auto=format&fit=crop&w=2000&q=80",
@@ -20,6 +24,7 @@ export function AuthPage() {
   const [loading, setLoading] = useState(false);
   const [activeImage, setActiveImage] = useState(0);
 
+  // Cycle background images every 6.5s
   useEffect(() => {
     const timer = window.setInterval(() => {
       setActiveImage((current) => (current + 1) % BACKGROUND_IMAGES.length);

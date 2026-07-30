@@ -1,3 +1,6 @@
+/**
+ * Post-login workspace: inventory search/purchase and admin stock tools.
+ */
 import { useEffect, useState, type FormEvent, type ReactNode } from "react";
 import {
   api,
@@ -25,6 +28,7 @@ const emptyForm: VehicleFormState = {
 
 type DashboardView = "inventory" | "purchases";
 
+/** Maps stock quantity to a simple progress-bar width. */
 function stockPercent(quantity: number) {
   return Math.min(100, Math.max(8, (quantity / 20) * 100));
 }
@@ -86,6 +90,7 @@ export function DashboardPage() {
 
   const isAdmin = user?.role === "admin";
 
+  /** Exits edit mode and clears the admin vehicle form. */
   function clearEdit() {
     setEditingId(null);
     setForm(emptyForm);

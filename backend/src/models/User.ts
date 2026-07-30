@@ -1,3 +1,6 @@
+/**
+ * Registered account model. New sign-ups always start as `user`.
+ */
 import mongoose, { Document, Schema } from "mongoose";
 
 export type UserRole = "user" | "admin";

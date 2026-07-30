@@ -1,9 +1,13 @@
+/**
+ * Vehicle and inventory handlers: CRUD, search, purchase, and restock.
+ */
 import { Response } from "express";
 import { FilterQuery } from "mongoose";
 import { IVehicle, Vehicle } from "../models/Vehicle";
 import { Purchase } from "../models/Purchase";
 import { AuthenticatedRequest } from "../middleware/authMiddleware";
 
+/** Maps a Mongoose vehicle document to the API response shape. */
 function toVehicleResponse(vehicle: {
   id: string;
   make: string;
@@ -22,6 +26,7 @@ function toVehicleResponse(vehicle: {
   };
 }
 
+/** Adds a vehicle to inventory. */
 export async function createVehicle(
   req: AuthenticatedRequest,
   res: Response
@@ -56,6 +61,7 @@ export async function createVehicle(
   }
 }
 
+/** Returns all vehicles, newest first. */
 export async function listVehicles(
   _req: AuthenticatedRequest,
   res: Response
@@ -70,6 +76,7 @@ export async function listVehicles(
   }
 }
 
+/** Filters vehicles by make, model, category, and optional price range. */
 export async function searchVehicles(
   req: AuthenticatedRequest,
   res: Response
@@ -107,6 +114,7 @@ export async function searchVehicles(
   }
 }
 
+/** Updates vehicle fields by id. */
 export async function updateVehicle(
   req: AuthenticatedRequest,
   res: Response
@@ -131,6 +139,7 @@ export async function updateVehicle(
   }
 }
 
+/** Deletes a vehicle (admin-only at the route layer). */
 export async function deleteVehicle(
   req: AuthenticatedRequest,
   res: Response
@@ -149,6 +158,7 @@ export async function deleteVehicle(
   }
 }
 
+/** Decrements stock by one and records a purchase for the buyer. */
 export async function purchaseVehicle(
   req: AuthenticatedRequest,
   res: Response
@@ -191,6 +201,7 @@ export async function purchaseVehicle(
   }
 }
 
+/** Increases stock by the given quantity (admin-only at the route layer). */
 export async function restockVehicle(
   req: AuthenticatedRequest,
   res: Response

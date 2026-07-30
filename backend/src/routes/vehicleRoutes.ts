@@ -1,3 +1,6 @@
+/**
+ * Protected vehicle routes. Delete and restock require admin.
+ */
 import { Router } from "express";
 import {
   createVehicle,

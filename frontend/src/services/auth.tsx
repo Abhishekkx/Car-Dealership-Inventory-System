@@ -1,3 +1,6 @@
+/**
+ * Auth context: persists JWT and user profile in localStorage.
+ */
 import {
   createContext,
   useContext,
@@ -20,6 +23,7 @@ const AuthContext = createContext<AuthContextValue | undefined>(undefined);
 const TOKEN_KEY = "dealership_token";
 const USER_KEY = "dealership_user";
 
+/** Provides login, register, and logout to the SPA tree. */
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [token, setToken] = useState<string | null>(() =>
     localStorage.getItem(TOKEN_KEY)
@@ -61,6 +65,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
 
+/** Access the current auth session; must be used under AuthProvider. */
 export function useAuth() {
   const context = useContext(AuthContext);
   if (!context) {

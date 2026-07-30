@@ -1,3 +1,6 @@
+/**
+ * Root SPA shell: shows auth screens until a JWT session exists.
+ */
 import { AuthProvider, useAuth } from "./services/auth";
 import { AuthPage } from "./pages/AuthPage";
 import { DashboardPage } from "./pages/DashboardPage";

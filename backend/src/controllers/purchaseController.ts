@@ -1,7 +1,11 @@
+/**
+ * Purchase history for the authenticated buyer.
+ */
 import { Response } from "express";
 import { Purchase } from "../models/Purchase";
 import { AuthenticatedRequest } from "../middleware/authMiddleware";
 
+/** Lists purchases belonging to the current user. */
 export async function listMyPurchases(
   req: AuthenticatedRequest,
   res: Response

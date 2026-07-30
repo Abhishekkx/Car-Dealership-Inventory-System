@@ -1,3 +1,6 @@
+/**
+ * Issues signed JWTs for authenticated sessions.
+ */
 import jwt, { type SignOptions } from "jsonwebtoken";
 import { IUser } from "../models/User";
 
@@ -8,6 +11,7 @@ interface TokenPayload {
   role: string;
 }
 
+/** Creates a JWT containing user id, name, email, and role. */
 export function signToken(user: IUser): string {
   const secret = process.env.JWT_SECRET;
   if (!secret) {

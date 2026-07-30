@@ -131,6 +131,50 @@ Commit messages use `test:` for Red and `feat:` for Green where the pair was spl
 
 App runtime uses **MongoDB Atlas**. Automated tests use an in-memory MongoDB server so suites stay fast, isolated, and do not mutate shared Atlas data.
 
+## Test report
+
+Backend tests are written with **Vitest** and **Supertest**. Each suite spins up an isolated **mongodb-memory-server** instance so runs never touch the live Atlas database. Coverage focuses on auth, protected vehicle CRUD, search filters, purchase/restock inventory rules, and role-based access (including the purchase-history extra).
+
+### How to run
+
+```bash
+cd backend
+npm test
+```
+
+### Latest results
+
+| Metric | Result |
+|--------|--------|
+| Test files | **8 passed (8)** |
+| Tests | **30 passed (30)** |
+| Failures | **0** |
+| Duration | ~9.2s |
+| Runner | Vitest v2.1.9 |
+
+### Suite breakdown
+
+| File | Cases | Focus |
+|------|------:|-------|
+| `auth.register.test.ts` | 5 | User registration validation and success |
+| `auth.login.test.ts` | 4 | Login JWT issue and credential rejection |
+| `vehicles.test.ts` | 6 | Create, list, update, delete; auth and admin gates |
+| `vehicles.search.test.ts` | 4 | Make, model, category, and price-range search |
+| `inventory.test.ts` | 4 | Purchase stock decrease, out-of-stock, restock, non-admin blocked |
+| `roles.test.ts` | 3 | Normal user vs admin permissions |
+| `purchases.test.ts` | 3 | Purchase history recording and ownership |
+| `db.test.ts` | 1 | Database connection helper |
+
+### Sample output
+
+```text
+ Test Files  8 passed (8)
+      Tests  30 passed (30)
+   Duration  9.23s
+```
+
+All listed cases passed on the latest local run (`npm test` in `backend`).
+
 ## My AI Usage
 
 **AI tool:** Cursor
