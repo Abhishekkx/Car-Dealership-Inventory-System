@@ -95,13 +95,22 @@ export async function searchVehicles(
       filter.category = new RegExp(category.trim(), "i");
     }
 
-    if (minPrice !== undefined || maxPrice !== undefined) {
+    const min =
+      typeof minPrice === "string" && minPrice.trim() !== ""
+        ? Number(minPrice)
+        : NaN;
+    const max =
+      typeof maxPrice === "string" && maxPrice.trim() !== ""
+        ? Number(maxPrice)
+        : NaN;
+
+    if (!Number.isNaN(min) || !Number.isNaN(max)) {
       filter.price = {};
-      if (minPrice !== undefined) {
-        filter.price.$gte = Number(minPrice);
+      if (!Number.isNaN(min)) {
+        filter.price.$gte = min;
       }
-      if (maxPrice !== undefined) {
-        filter.price.$lte = Number(maxPrice);
+      if (!Number.isNaN(max)) {
+        filter.price.$lte = max;
       }
     }
 

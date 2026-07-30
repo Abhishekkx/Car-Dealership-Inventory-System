@@ -145,11 +145,21 @@ export function DashboardPage() {
 
   async function handleSearch(event: FormEvent) {
     event.preventDefault();
-    await loadVehicles(filters);
+    setMessage("");
+    const activeFilters: SearchParams = {
+      make: filters.make?.trim() || "",
+      model: filters.model?.trim() || "",
+      category: filters.category?.trim() || "",
+      minPrice: filters.minPrice?.trim() || "",
+      maxPrice: filters.maxPrice?.trim() || "",
+    };
+    setFilters(activeFilters);
+    await loadVehicles(activeFilters);
   }
 
+  /** Clears all search fields and reloads the full inventory lot. */
   async function clearFilters() {
-    const reset = {
+    const reset: SearchParams = {
       make: "",
       model: "",
       category: "",
@@ -157,6 +167,8 @@ export function DashboardPage() {
       maxPrice: "",
     };
     setFilters(reset);
+    setMessage("");
+    setError("");
     await loadVehicles(reset);
   }
 
@@ -386,11 +398,12 @@ export function DashboardPage() {
                 <div>
                   <h3 className="font-semibold text-ink">Search inventory</h3>
                   <p className="text-xs text-slate sm:text-sm">
-                    Filter by make, model, category, or price range.
+                    Fill any field (or combine them), then Search. Reset shows
+                    the full lot again.
                   </p>
                 </div>
               </div>
-              <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-6">
+              <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-7">
                 <input
                   placeholder="Make"
                   value={filters.make}
@@ -418,6 +431,7 @@ export function DashboardPage() {
                 <input
                   placeholder="Min price (₹)"
                   type="number"
+                  min={0}
                   value={filters.minPrice}
                   onChange={(e) =>
                     setFilters({ ...filters, minPrice: e.target.value })
@@ -427,29 +441,23 @@ export function DashboardPage() {
                 <input
                   placeholder="Max price (₹)"
                   type="number"
+                  min={0}
                   value={filters.maxPrice}
                   onChange={(e) =>
                     setFilters({ ...filters, maxPrice: e.target.value })
                   }
                   className="input-field"
                 />
-                <div className="flex gap-2">
-                  <button type="submit" className="btn-ink flex-1">
-                    Search
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => void clearFilters()}
-                    className="btn-ghost px-3"
-                    title="Clear filters"
-                  >
-                    <Icon size={16}>
-                      <path d="M3 6h18" />
-                      <path d="M8 6V4h8v2" />
-                      <path d="m19 6-1 14H6L5 6" />
-                    </Icon>
-                  </button>
-                </div>
+                <button type="submit" className="btn-ink w-full">
+                  Search
+                </button>
+                <button
+                  type="button"
+                  onClick={() => void clearFilters()}
+                  className="btn-ghost w-full"
+                >
+                  Reset
+                </button>
               </div>
             </form>
 

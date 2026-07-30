@@ -116,4 +116,24 @@ describe("GET /api/vehicles/search", () => {
     expect(response.body.vehicles).toHaveLength(1);
     expect(response.body.vehicles[0].model).toBe("RAV4");
   });
+
+  it("combines make and category filters", async () => {
+    const response = await request(app)
+      .get("/api/vehicles/search")
+      .query({ make: "Toyota", category: "SUV" })
+      .set("Authorization", `Bearer ${token}`);
+
+    expect(response.status).toBe(200);
+    expect(response.body.vehicles).toHaveLength(1);
+    expect(response.body.vehicles[0].model).toBe("RAV4");
+  });
+
+  it("returns all vehicles when no filters are provided", async () => {
+    const response = await request(app)
+      .get("/api/vehicles/search")
+      .set("Authorization", `Bearer ${token}`);
+
+    expect(response.status).toBe(200);
+    expect(response.body.vehicles).toHaveLength(3);
+  });
 });

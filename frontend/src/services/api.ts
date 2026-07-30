@@ -105,7 +105,10 @@ export const api = {
   searchVehicles(token: string, params: SearchParams) {
     const query = new URLSearchParams();
     Object.entries(params).forEach(([key, value]) => {
-      if (value) query.set(key, value);
+      const trimmed = typeof value === "string" ? value.trim() : value;
+      if (trimmed !== undefined && trimmed !== null && trimmed !== "") {
+        query.set(key, trimmed);
+      }
     });
     const suffix = query.toString() ? `?${query.toString()}` : "";
     return request<{ vehicles: Vehicle[] }>(
