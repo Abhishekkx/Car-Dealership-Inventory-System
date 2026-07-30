@@ -105,4 +105,4 @@ Add purchase history so each user can view their own purchases in the SPA.
 Improve the SPA design to be visually appealing, responsive, and provide a strong user experience.
 ```
 
-**Outcome:** Rebranded UI as Lotline with Fraunces/Manrope typography, atmospheric backgrounds, clearer hierarchy, motion, and mobile-friendly layouts.
+**Outcome:** Polished the SPA under Car Dealership Inventory System branding with professional typography, atmospheric backgrounds, clearer hierarchy, motion, and mobile-friendly layouts.
