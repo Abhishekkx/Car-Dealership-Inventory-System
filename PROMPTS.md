@@ -81,3 +81,16 @@ Set up admin seeding and ensure admin-only actions.
 ```
 
 **Outcome:** Added `npm run seed:admin`, role-based access tests, and README role matrix.
+
+---
+
+## Frontend auth
+
+**AI tool:** Cursor
+
+**Prompt Used:**
+```text
+API client + auth — login/register, store JWT
+```
+
+**Outcome:** Added frontend API client, AuthProvider with localStorage JWT, and login/register UI.

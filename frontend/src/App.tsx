@@ -1,10 +1,17 @@
+import { AuthProvider, useAuth } from "./services/auth";
+import { AuthPage } from "./pages/AuthPage";
+import { HomePage } from "./pages/HomePage";
+
+function AppContent() {
+  const { token } = useAuth();
+  return token ? <HomePage /> : <AuthPage />;
+}
+
 function App() {
   return (
-    <main className="min-h-screen flex items-center justify-center bg-slate-100">
-      <h1 className="text-3xl font-semibold text-slate-900">
-        Car Dealership Inventory System
-      </h1>
-    </main>
+    <AuthProvider>
+      <AppContent />
+    </AuthProvider>
   );
 }
 

@@ -10,7 +10,7 @@ async function seedAdmin() {
     throw new Error("MONGODB_URI is not set");
   }
 
-  const email = (process.env.ADMIN_EMAIL || "admin@apexmotors.com").toLowerCase();
+  const email = (process.env.ADMIN_EMAIL || "admin@carinventory.com").toLowerCase();
   const password = process.env.ADMIN_PASSWORD || "admin123";
 
   await connectDatabase(uri);
