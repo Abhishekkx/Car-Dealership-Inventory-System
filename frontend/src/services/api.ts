@@ -33,6 +33,16 @@ export interface SearchParams {
   maxPrice?: string;
 }
 
+export interface Purchase {
+  id: string;
+  vehicleId: string;
+  make: string;
+  model: string;
+  category: string;
+  price: number;
+  purchasedAt: string;
+}
+
 async function request<T>(
   path: string,
   options: RequestInit = {},
@@ -133,5 +143,9 @@ export const api = {
       { method: "POST", body: JSON.stringify({ quantity }) },
       token
     );
+  },
+
+  listMyPurchases(token: string) {
+    return request<{ purchases: Purchase[] }>("/purchases", {}, token);
   },
 };

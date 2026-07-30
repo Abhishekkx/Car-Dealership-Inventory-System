@@ -1,31 +1,17 @@
 # AI Prompts History
 
-## To create project skeleton
+## Project skeleton
 
 **AI tool:** Cursor
 
-**Prompt Used:**
-
+**Prompt:**
 ```text
-set up the initial project :
-
-Stack decisions :
-- Backend: Node.js + TypeScript + Express
-- Database: MongoDB
-- Auth: JWT
-- Frontend: React + Vite + Tailwind CSS
-- Backend testing: Vitest + Supertest
-
-create only the foundation — no business features yet:
-1. Root files: .gitignore
-2. backend/ folder with Express + TypeScript scaffold, env example,
-   basic app entrypoint, health check route, and a working test setup
-3. frontend/ folder with Vite React TypeScript + Tailwind configured
-4. Empty/placeholder folders for routes, controllers, models, and middleware
-
-Do not implement auth, vehicles, or inventory yet.
+Set up the initial Car Dealership Inventory System foundation.
+Use Node.js/TypeScript/Express, MongoDB, JWT, and React/Vite/Tailwind.
+Create backend and frontend scaffolds only — no business features yet.
 ```
-**Outcome:** Generated the monorepo skeleton (`backend/`, `frontend/`), tooling configs, and base project structure.
+
+**Outcome:** Created monorepo structure, tooling, and empty module folders.
 
 ---
 
@@ -33,76 +19,77 @@ Do not implement auth, vehicles, or inventory yet.
 
 **AI tool:** Cursor
 
-**Prompt Used:**
+**Prompt:**
 ```text
-Connect the backend to MongoDB using MONGODB_URI from .env.
-Add db config, connect on server startup, and a simple health check
-that reports database status.
+Connect the Express backend to MongoDB Atlas using MONGODB_URI and expose a health check that reports database status.
 ```
 
-**Outcome:** Added `config/db.ts`, startup Mongo connection, `/api/health` DB status, and a connection unit test.
+**Outcome:** Added database config, startup connection, and `/api/health`.
 
 ---
 
-## Auth register / login + JWT
+## Authentication API
 
 **AI tool:** Cursor
 
-**Prompt Used:**
+**Prompt:**
 ```text
-Implement Auth register/login + JWT
+Implement register and login with JWT using TDD. Do not add code comments.
 ```
 
-**Outcome:** Added User model, register/login endpoints, JWT signing on login, and auth tests (9 tests passing including DB).
+**Outcome:** Delivered auth endpoints, User model, password hashing, and JWT login.
 
 ---
 
-## Vehicles CRUD, search, and inventory
+## Vehicles and inventory API
 
 **AI tool:** Cursor
 
-**Prompt Used:**
+**Prompt:**
 ```text
-TDD for vehicles, search, and inventory (purchase/restock).
+Implement protected vehicle CRUD, search, purchase, and admin-only restock/delete with Red-Green TDD commits.
 ```
 
-**Outcome:** Implemented protected vehicles CRUD, search, purchase, and admin restock. 23 backend tests passing with Red-Green commit history.
+**Outcome:** Completed vehicle and inventory APIs with passing backend tests.
 
 ---
 
-## Admin seed and role checks
+## Admin setup and role verification
 
 **AI tool:** Cursor
 
-**Prompt Used:**
+**Prompt:**
 ```text
-Set up admin seeding and ensure admin-only actions.
+Add admin seeding and verify role-based access for API and SPA.
+Normal users may browse, search, and purchase.
+Admins may add, update, delete, and restock.
+Confirm UI and endpoints behave correctly per role.
 ```
 
-**Outcome:** Added `npm run seed:admin`, role-based access tests, and README role matrix.
+**Outcome:** Added `seed:admin`, role API tests, and role-based SPA controls (admin management UI vs user purchase flow).
 
 ---
 
-## Frontend auth
+## Frontend auth and dashboard
 
 **AI tool:** Cursor
 
-**Prompt Used:**
+**Prompt:**
 ```text
-API client + auth — login/register, store JWT
+Build login/register with JWT storage, then the vehicle dashboard with search, purchase, and admin actions.
 ```
 
-**Outcome:** Added frontend API client, AuthProvider with localStorage JWT, and login/register UI.
+**Outcome:** Delivered auth UI, inventory dashboard, password visibility toggle, and clearer price/quantity inputs.
 
 ---
 
-## Frontend dashboard
+## Purchase history
 
 **AI tool:** Cursor
 
-**Prompt Used:**
+**Prompt:**
 ```text
-okay next step
+Add purchase history so each user can view their own purchases in the SPA.
 ```
 
-**Outcome:** Built vehicle dashboard with list, search/filter, purchase (disabled at qty 0), and admin add/edit/delete/restock UI.
+**Outcome:** Added Purchase model, `GET /api/purchases`, purchase recording on buy, and a My purchases view.

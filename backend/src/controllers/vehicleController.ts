@@ -1,6 +1,7 @@
 import { Response } from "express";
 import { FilterQuery } from "mongoose";
 import { IVehicle, Vehicle } from "../models/Vehicle";
+import { Purchase } from "../models/Purchase";
 import { AuthenticatedRequest } from "../middleware/authMiddleware";
 
 function toVehicleResponse(vehicle: {
@@ -153,6 +154,11 @@ export async function purchaseVehicle(
   res: Response
 ): Promise<void> {
   try {
+    if (!req.user) {
+      res.status(401).json({ message: "Authentication required" });
+      return;
+    }
+
     const vehicle = await Vehicle.findById(req.params.id);
 
     if (!vehicle) {
@@ -167,6 +173,15 @@ export async function purchaseVehicle(
 
     vehicle.quantity -= 1;
     await vehicle.save();
+
+    await Purchase.create({
+      userId: req.user.id,
+      vehicleId: vehicle.id,
+      make: vehicle.make,
+      model: vehicle.model,
+      category: vehicle.category,
+      price: vehicle.price,
+    });
 
     res.status(200).json({ vehicle: toVehicleResponse(vehicle) });
   } catch {

@@ -3,6 +3,7 @@ import cors from "cors";
 import mongoose from "mongoose";
 import authRouter from "./routes/authRoutes";
 import vehicleRouter from "./routes/vehicleRoutes";
+import purchaseRouter from "./routes/purchaseRoutes";
 
 const app = express();
 
@@ -22,5 +23,6 @@ app.get("/api/health", (_req, res) => {
 
 app.use("/api/auth", authRouter);
 app.use("/api/vehicles", vehicleRouter);
+app.use("/api/purchases", purchaseRouter);
 
 export default app;
