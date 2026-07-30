@@ -1,9 +1,9 @@
 /**
  * Inventory vehicle: make, model, category, price, and quantity in stock.
  */
-import mongoose, { Document, Schema } from "mongoose";
+import mongoose, { Schema } from "mongoose";
 
-export interface IVehicle extends Document {
+export interface IVehicle {
   make: string;
   model: string;
   category: string;

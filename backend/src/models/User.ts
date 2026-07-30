@@ -1,11 +1,11 @@
 /**
  * Registered account model. New sign-ups always start as `user`.
  */
-import mongoose, { Document, Schema } from "mongoose";
+import mongoose, { Schema } from "mongoose";
 
 export type UserRole = "user" | "admin";
 
-export interface IUser extends Document {
+export interface IUser {
   name: string;
   email: string;
   password: string;

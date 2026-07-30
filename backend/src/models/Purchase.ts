@@ -1,9 +1,9 @@
 /**
  * Snapshot of a completed purchase, including buyer identity for history views.
  */
-import mongoose, { Document, Schema } from "mongoose";
+import mongoose, { Schema } from "mongoose";
 
-export interface IPurchase extends Document {
+export interface IPurchase {
   userId: string;
   buyerName: string;
   buyerEmail: string;

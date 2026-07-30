@@ -2,6 +2,7 @@
  * Issues signed JWTs for authenticated sessions.
  */
 import jwt, { type SignOptions } from "jsonwebtoken";
+import type { HydratedDocument } from "mongoose";
 import { IUser } from "../models/User";
 
 interface TokenPayload {
@@ -12,7 +13,7 @@ interface TokenPayload {
 }
 
 /** Creates a JWT containing user id, name, email, and role. */
-export function signToken(user: IUser): string {
+export function signToken(user: HydratedDocument<IUser>): string {
   const secret = process.env.JWT_SECRET;
   if (!secret) {
     throw new Error("JWT_SECRET is not set");

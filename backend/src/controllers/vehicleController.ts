@@ -9,7 +9,8 @@ import { AuthenticatedRequest } from "../middleware/authMiddleware";
 
 /** Maps a Mongoose vehicle document to the API response shape. */
 function toVehicleResponse(vehicle: {
-  id: string;
+  _id?: { toString(): string };
+  id?: string;
   make: string;
   model: string;
   category: string;
@@ -17,7 +18,7 @@ function toVehicleResponse(vehicle: {
   quantity: number;
 }) {
   return {
-    id: vehicle.id,
+    id: vehicle.id ?? String(vehicle._id),
     make: vehicle.make,
     model: vehicle.model,
     category: vehicle.category,
