@@ -8,6 +8,31 @@ export interface User {
   role: UserRole;
 }
 
+export interface Vehicle {
+  id: string;
+  make: string;
+  model: string;
+  category: string;
+  price: number;
+  quantity: number;
+}
+
+export interface VehicleInput {
+  make: string;
+  model: string;
+  category: string;
+  price: number;
+  quantity: number;
+}
+
+export interface SearchParams {
+  make?: string;
+  model?: string;
+  category?: string;
+  minPrice?: string;
+  maxPrice?: string;
+}
+
 async function request<T>(
   path: string,
   options: RequestInit = {},
@@ -51,5 +76,62 @@ export const api = {
       method: "POST",
       body: JSON.stringify({ email, password }),
     });
+  },
+
+  listVehicles(token: string) {
+    return request<{ vehicles: Vehicle[] }>("/vehicles", {}, token);
+  },
+
+  searchVehicles(token: string, params: SearchParams) {
+    const query = new URLSearchParams();
+    Object.entries(params).forEach(([key, value]) => {
+      if (value) query.set(key, value);
+    });
+    const suffix = query.toString() ? `?${query.toString()}` : "";
+    return request<{ vehicles: Vehicle[] }>(
+      `/vehicles/search${suffix}`,
+      {},
+      token
+    );
+  },
+
+  createVehicle(token: string, payload: VehicleInput) {
+    return request<{ vehicle: Vehicle }>(
+      "/vehicles",
+      { method: "POST", body: JSON.stringify(payload) },
+      token
+    );
+  },
+
+  updateVehicle(token: string, id: string, payload: VehicleInput) {
+    return request<{ vehicle: Vehicle }>(
+      `/vehicles/${id}`,
+      { method: "PUT", body: JSON.stringify(payload) },
+      token
+    );
+  },
+
+  deleteVehicle(token: string, id: string) {
+    return request<{ message: string }>(
+      `/vehicles/${id}`,
+      { method: "DELETE" },
+      token
+    );
+  },
+
+  purchaseVehicle(token: string, id: string) {
+    return request<{ vehicle: Vehicle }>(
+      `/vehicles/${id}/purchase`,
+      { method: "POST" },
+      token
+    );
+  },
+
+  restockVehicle(token: string, id: string, quantity: number) {
+    return request<{ vehicle: Vehicle }>(
+      `/vehicles/${id}/restock`,
+      { method: "POST", body: JSON.stringify({ quantity }) },
+      token
+    );
   },
 };

@@ -22,7 +22,6 @@ create only the foundation — no business features yet:
    basic app entrypoint, health check route, and a working test setup
 3. frontend/ folder with Vite React TypeScript + Tailwind configured
 4. Empty/placeholder folders for routes, controllers, models, and middleware
-5. Keep code clean and without unnecessary comments
 
 Do not implement auth, vehicles, or inventory yet.
 ```
@@ -94,3 +93,16 @@ API client + auth — login/register, store JWT
 ```
 
 **Outcome:** Added frontend API client, AuthProvider with localStorage JWT, and login/register UI.
+
+---
+
+## Frontend dashboard
+
+**AI tool:** Cursor
+
+**Prompt Used:**
+```text
+okay next step
+```
+
+**Outcome:** Built vehicle dashboard with list, search/filter, purchase (disabled at qty 0), and admin add/edit/delete/restock UI.

@@ -1,10 +1,10 @@
 import { AuthProvider, useAuth } from "./services/auth";
 import { AuthPage } from "./pages/AuthPage";
-import { HomePage } from "./pages/HomePage";
+import { DashboardPage } from "./pages/DashboardPage";
 
 function AppContent() {
   const { token } = useAuth();
-  return token ? <HomePage /> : <AuthPage />;
+  return token ? <DashboardPage /> : <AuthPage />;
 }
 
 function App() {
