@@ -55,3 +55,29 @@ Implement Auth register/login + JWT
 ```
 
 **Outcome:** Added User model, register/login endpoints, JWT signing on login, and auth tests (9 tests passing including DB).
+
+---
+
+## Vehicles CRUD, search, and inventory
+
+**AI tool:** Cursor
+
+**Prompt Used:**
+```text
+TDD for vehicles, search, and inventory (purchase/restock).
+```
+
+**Outcome:** Implemented protected vehicles CRUD, search, purchase, and admin restock. 23 backend tests passing with Red-Green commit history.
+
+---
+
+## Admin seed and role checks
+
+**AI tool:** Cursor
+
+**Prompt Used:**
+```text
+Set up admin seeding and ensure admin-only actions.
+```
+
+**Outcome:** Added `npm run seed:admin`, role-based access tests, and README role matrix.
