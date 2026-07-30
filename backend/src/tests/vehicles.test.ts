@@ -6,7 +6,11 @@ import app from "../app";
 import { User } from "../models/User";
 
 async function registerAndLogin(email: string, password: string) {
-  await request(app).post("/api/auth/register").send({ email, password });
+  await request(app).post("/api/auth/register").send({
+    name: "Test User",
+    email,
+    password,
+  });
   const login = await request(app).post("/api/auth/login").send({ email, password });
   return login.body.token as string;
 }
@@ -37,6 +41,7 @@ describe("Vehicles API", () => {
     userToken = await registerAndLogin("buyer@example.com", "password123");
 
     await request(app).post("/api/auth/register").send({
+      name: "Admin User",
       email: "admin@example.com",
       password: "password123",
     });

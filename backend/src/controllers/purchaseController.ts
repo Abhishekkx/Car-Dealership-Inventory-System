@@ -19,6 +19,9 @@ export async function listMyPurchases(
     res.status(200).json({
       purchases: purchases.map((purchase) => ({
         id: purchase.id,
+        userId: purchase.userId,
+        buyerName: purchase.buyerName,
+        buyerEmail: purchase.buyerEmail,
         vehicleId: purchase.vehicleId,
         make: purchase.make,
         model: purchase.model,

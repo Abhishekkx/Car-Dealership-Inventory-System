@@ -30,6 +30,7 @@ describe("Inventory endpoints", () => {
     }
 
     await request(app).post("/api/auth/register").send({
+      name: "Buyer One",
       email: "buyer@example.com",
       password: "password123",
     });
@@ -40,6 +41,7 @@ describe("Inventory endpoints", () => {
     userToken = userLogin.body.token;
 
     await request(app).post("/api/auth/register").send({
+      name: "Admin User",
       email: "admin@example.com",
       password: "password123",
     });

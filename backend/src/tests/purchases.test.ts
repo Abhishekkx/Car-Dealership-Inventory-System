@@ -31,6 +31,7 @@ describe("Purchases", () => {
     }
 
     await request(app).post("/api/auth/register").send({
+      name: "Buyer One",
       email: "buyer@example.com",
       password: "password123",
     });
@@ -41,6 +42,7 @@ describe("Purchases", () => {
     userToken = userLogin.body.token;
 
     await request(app).post("/api/auth/register").send({
+      name: "Other Buyer",
       email: "other@example.com",
       password: "password123",
     });
@@ -51,6 +53,7 @@ describe("Purchases", () => {
     otherToken = otherLogin.body.token;
 
     await request(app).post("/api/auth/register").send({
+      name: "Admin User",
       email: "admin@example.com",
       password: "password123",
     });
@@ -93,6 +96,8 @@ describe("Purchases", () => {
       category: "Sedan",
       price: 25000,
       vehicleId,
+      buyerName: "Buyer One",
+      buyerEmail: "buyer@example.com",
     });
     expect(response.body.purchases[0]).toHaveProperty("id");
     expect(response.body.purchases[0]).toHaveProperty("purchasedAt");

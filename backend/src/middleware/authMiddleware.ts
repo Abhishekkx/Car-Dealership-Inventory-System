@@ -3,6 +3,7 @@ import jwt from "jsonwebtoken";
 
 export interface AuthUser {
   id: string;
+  name: string;
   email: string;
   role: "user" | "admin";
 }
@@ -13,6 +14,7 @@ export interface AuthenticatedRequest extends Request {
 
 interface TokenPayload {
   id: string;
+  name: string;
   email: string;
   role: "user" | "admin";
 }
@@ -41,6 +43,7 @@ export function authenticate(
     const decoded = jwt.verify(token, secret) as TokenPayload;
     req.user = {
       id: decoded.id,
+      name: decoded.name || decoded.email.split("@")[0],
       email: decoded.email,
       role: decoded.role,
     };

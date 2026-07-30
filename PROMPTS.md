@@ -93,3 +93,16 @@ Add purchase history so each user can view their own purchases in the SPA.
 ```
 
 **Outcome:** Added Purchase model, `GET /api/purchases`, purchase recording on buy, and a My purchases view.
+
+---
+
+## Visual design polish
+
+**AI tool:** Cursor
+
+**Prompt:**
+```text
+Improve the SPA design to be visually appealing, responsive, and provide a strong user experience.
+```
+
+**Outcome:** Rebranded UI as Lotline with Fraunces/Manrope typography, atmospheric backgrounds, clearer hierarchy, motion, and mobile-friendly layouts.

@@ -12,6 +12,7 @@ async function seedAdmin() {
 
   const email = (process.env.ADMIN_EMAIL || "admin@carinventory.com").toLowerCase();
   const password = process.env.ADMIN_PASSWORD || "admin123";
+  const name = process.env.ADMIN_NAME || "Dealership Admin";
 
   await connectDatabase(uri);
 
@@ -19,12 +20,14 @@ async function seedAdmin() {
   const existing = await User.findOne({ email });
 
   if (existing) {
+    existing.name = name;
     existing.role = "admin";
     existing.password = hashedPassword;
     await existing.save();
     console.log(`Updated existing user to admin: ${email}`);
   } else {
     await User.create({
+      name,
       email,
       password: hashedPassword,
       role: "admin",

@@ -176,6 +176,8 @@ export async function purchaseVehicle(
 
     await Purchase.create({
       userId: req.user.id,
+      buyerName: req.user.name,
+      buyerEmail: req.user.email,
       vehicleId: vehicle.id,
       make: vehicle.make,
       model: vehicle.model,

@@ -25,6 +25,10 @@ const emptyForm: VehicleFormState = {
 
 type DashboardView = "inventory" | "purchases";
 
+function stockPercent(quantity: number) {
+  return Math.min(100, Math.max(8, (quantity / 20) * 100));
+}
+
 export function DashboardPage() {
   const { user, token, logout } = useAuth();
   const [view, setView] = useState<DashboardView>("inventory");
@@ -46,6 +50,11 @@ export function DashboardPage() {
 
   const isAdmin = user?.role === "admin";
 
+  function clearEdit() {
+    setEditingId(null);
+    setForm(emptyForm);
+  }
+
   async function loadVehicles(activeFilters: SearchParams = filters) {
     if (!token) return;
     setLoading(true);
@@ -57,7 +66,12 @@ export function DashboardPage() {
         ? await api.searchVehicles(token, activeFilters)
         : await api.listVehicles(token);
       setVehicles(result.vehicles);
-    } catch (err) {
+      if (
+        editingId &&
+        !result.vehicles.some((vehicle) => vehicle.id === editingId)
+      ) {
+        clearEdit();
+      }    } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to load vehicles");
     } finally {
       setLoading(false);
@@ -153,6 +167,9 @@ export function DashboardPage() {
     try {
       await api.deleteVehicle(token, id);
       setMessage("Vehicle deleted");
+      if (editingId === id) {
+        clearEdit();
+      }
       await loadVehicles();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Delete failed");
@@ -184,63 +201,98 @@ export function DashboardPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#f4f7fb]">
-      <header className="border-b border-black/10 bg-white/90 backdrop-blur">
-        <div className="mx-auto max-w-6xl px-4 py-5 flex items-center justify-between gap-4">
-          <div>
-            <p className="text-xs uppercase tracking-[0.3em] text-[#c45c26]">
-              Inventory
-            </p>
-            <h1 className="font-serif text-3xl text-[#10141c]">
-              Car Dealership
-            </h1>
-          </div>
-          <div className="flex items-center gap-4 text-sm">
-            <div className="text-right">
-              <p className="font-medium">{user?.email}</p>
-              <p className="text-black/50 capitalize">{user?.role}</p>
+    <div className="min-h-screen">
+      <header className="sticky top-0 z-20 border-b border-line/80 bg-white/85 backdrop-blur-md">
+        <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-4 sm:px-6">
+          <div className="animate-fade-in flex items-center gap-3">
+            <div className="hidden h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-ink text-accent sm:flex">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="22"
+                height="22"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.8"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M5 17h14l-1.4-4.2a2 2 0 0 0-1.9-1.3H8.3a2 2 0 0 0-1.9 1.3L5 17Z" />
+                <path d="M7 11.5 8.2 8.2A1.5 1.5 0 0 1 9.6 7h4.8a1.5 1.5 0 0 1 1.4.8L17 11.5" />
+                <circle cx="8" cy="18.5" r="1.4" />
+                <circle cx="16" cy="18.5" r="1.4" />
+              </svg>
             </div>
-            <button
-              onClick={logout}
-              className="border border-black/15 px-4 py-2 hover:bg-[#e8edf4]"
-            >
+            <div>
+              <p className="text-[11px] font-semibold uppercase tracking-[0.26em] text-accent">
+                Inventory
+              </p>
+              <h1 className="font-display text-lg leading-tight font-bold text-ink sm:text-2xl">
+                Car Dealership Inventory System
+              </h1>
+            </div>
+          </div>
+          <div className="flex items-center gap-3 text-sm sm:gap-4">
+            <div className="hidden text-right sm:block">
+              <p className="font-semibold text-ink">
+                {user?.name || user?.email}
+              </p>
+              <p className="capitalize text-slate">
+                {user?.role}
+                {user?.email ? ` · ${user.email}` : ""}
+              </p>
+            </div>
+            <span className="rounded-md border border-line bg-fog px-2.5 py-1 text-xs font-semibold uppercase tracking-wide text-steel sm:hidden">
+              {user?.role}
+            </span>
+            <button onClick={logout} className="btn-ghost">
               Logout
             </button>
           </div>
         </div>
       </header>
 
-      <main className="mx-auto max-w-6xl px-4 py-8 space-y-8">
-        <div className="flex gap-2">
-          <button
-            type="button"
-            onClick={() => setView("inventory")}
-            className={`px-4 py-2 border ${
-              view === "inventory"
-                ? "bg-[#10141c] text-white border-[#10141c]"
-                : "bg-white border-black/15 hover:bg-[#e8edf4]"
-            }`}
-          >
-            Inventory
-          </button>
-          <button
-            type="button"
-            onClick={() => setView("purchases")}
-            className={`px-4 py-2 border ${
-              view === "purchases"
-                ? "bg-[#10141c] text-white border-[#10141c]"
-                : "bg-white border-black/15 hover:bg-[#e8edf4]"
-            }`}
-          >
-            My purchases
-          </button>
-        </div>
+      <main className="mx-auto max-w-6xl space-y-7 px-4 py-8 sm:px-6">
+        <section className="animate-fade-up flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+          <div>
+            <h2 className="font-display text-3xl font-bold text-ink sm:text-4xl">
+              {view === "inventory" ? "Showroom stock" : "Your purchases"}
+            </h2>
+            <p className="mt-2 max-w-xl text-sm text-slate sm:text-base">
+              {view === "inventory"
+                ? "Search the lot, purchase available cars, and manage inventory with role-based controls."
+                : "A private history of vehicles you have purchased from the lot."}
+            </p>
+          </div>
+          <div className="flex gap-2">
+            <button
+              type="button"
+              onClick={() => setView("inventory")}
+              className={`view-tab ${
+                view === "inventory" ? "view-tab-active" : "view-tab-idle"
+              }`}
+            >
+              Inventory
+            </button>
+            <button
+              type="button"
+              onClick={() => setView("purchases")}
+              className={`view-tab ${
+                view === "purchases" ? "view-tab-active" : "view-tab-idle"
+              }`}
+            >
+              My purchases
+            </button>
+          </div>
+        </section>
 
         {error ? (
-          <p className="text-sm text-red-700 bg-red-50 px-3 py-2">{error}</p>
+          <p className="animate-fade-in rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-danger">
+            {error}
+          </p>
         ) : null}
         {message ? (
-          <p className="text-sm text-emerald-800 bg-emerald-50 px-3 py-2">
+          <p className="animate-fade-in rounded-md border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm text-success">
             {message}
           </p>
         ) : null}
@@ -249,13 +301,13 @@ export function DashboardPage() {
           <>
             <form
               onSubmit={handleSearch}
-              className="grid gap-3 md:grid-cols-6 bg-white p-4 border border-black/10"
+              className="animate-fade-up surface grid gap-3 rounded-xl p-4 sm:grid-cols-2 lg:grid-cols-6"
             >
               <input
                 placeholder="Make"
                 value={filters.make}
                 onChange={(e) => setFilters({ ...filters, make: e.target.value })}
-                className="border border-black/10 px-3 py-2"
+                className="input-field"
               />
               <input
                 placeholder="Model"
@@ -263,7 +315,7 @@ export function DashboardPage() {
                 onChange={(e) =>
                   setFilters({ ...filters, model: e.target.value })
                 }
-                className="border border-black/10 px-3 py-2"
+                className="input-field"
               />
               <input
                 placeholder="Category"
@@ -271,7 +323,7 @@ export function DashboardPage() {
                 onChange={(e) =>
                   setFilters({ ...filters, category: e.target.value })
                 }
-                className="border border-black/10 px-3 py-2"
+                className="input-field"
               />
               <input
                 placeholder="Min price"
@@ -280,7 +332,7 @@ export function DashboardPage() {
                 onChange={(e) =>
                   setFilters({ ...filters, minPrice: e.target.value })
                 }
-                className="border border-black/10 px-3 py-2"
+                className="input-field"
               />
               <input
                 placeholder="Max price"
@@ -289,12 +341,9 @@ export function DashboardPage() {
                 onChange={(e) =>
                   setFilters({ ...filters, maxPrice: e.target.value })
                 }
-                className="border border-black/10 px-3 py-2"
+                className="input-field"
               />
-              <button
-                type="submit"
-                className="bg-[#10141c] text-white px-4 py-2 hover:bg-[#1c2433]"
-              >
+              <button type="submit" className="btn-ink w-full">
                 Search
               </button>
             </form>
@@ -302,24 +351,29 @@ export function DashboardPage() {
             {isAdmin ? (
               <form
                 onSubmit={handleSaveVehicle}
-                className="grid gap-3 md:grid-cols-6 bg-white p-4 border border-black/10"
+                className="animate-fade-up surface grid gap-3 rounded-xl p-5 sm:grid-cols-2 lg:grid-cols-6"
               >
-                <h2 className="md:col-span-6 font-serif text-2xl">
-                  {editingId ? "Update vehicle" : "Add vehicle"}
-                </h2>
+                <div className="sm:col-span-2 lg:col-span-6">
+                  <h3 className="font-display text-2xl font-bold text-ink">
+                    {editingId ? "Update vehicle" : "Add vehicle"}
+                  </h3>
+                  <p className="mt-1 text-sm text-slate">
+                    Admin tools for stocking and correcting inventory records.
+                  </p>
+                </div>
                 <input
                   required
                   placeholder="Make"
                   value={form.make}
                   onChange={(e) => setForm({ ...form, make: e.target.value })}
-                  className="border border-black/10 px-3 py-2"
+                  className="input-field"
                 />
                 <input
                   required
                   placeholder="Model"
                   value={form.model}
                   onChange={(e) => setForm({ ...form, model: e.target.value })}
-                  className="border border-black/10 px-3 py-2"
+                  className="input-field"
                 />
                 <input
                   required
@@ -328,7 +382,7 @@ export function DashboardPage() {
                   onChange={(e) =>
                     setForm({ ...form, category: e.target.value })
                   }
-                  className="border border-black/10 px-3 py-2"
+                  className="input-field"
                 />
                 <input
                   required
@@ -338,7 +392,7 @@ export function DashboardPage() {
                   placeholder="Price ($)"
                   value={form.price}
                   onChange={(e) => setForm({ ...form, price: e.target.value })}
-                  className="border border-black/10 px-3 py-2"
+                  className="input-field"
                 />
                 <input
                   required
@@ -350,23 +404,17 @@ export function DashboardPage() {
                   onChange={(e) =>
                     setForm({ ...form, quantity: e.target.value })
                   }
-                  className="border border-black/10 px-3 py-2"
+                  className="input-field"
                 />
                 <div className="flex gap-2">
-                  <button
-                    type="submit"
-                    className="flex-1 bg-[#c45c26] text-white px-4 py-2 hover:bg-[#9a4518]"
-                  >
+                  <button type="submit" className="btn-primary flex-1">
                     {editingId ? "Update" : "Add"}
                   </button>
                   {editingId ? (
                     <button
                       type="button"
-                      onClick={() => {
-                        setEditingId(null);
-                        setForm(emptyForm);
-                      }}
-                      className="border border-black/15 px-3"
+                      onClick={clearEdit}
+                      className="btn-ghost"
                     >
                       Cancel
                     </button>
@@ -377,45 +425,84 @@ export function DashboardPage() {
 
             <section className="space-y-4">
               <div className="flex items-end justify-between gap-4">
-                <h2 className="font-serif text-3xl">Available vehicles</h2>
-                <p className="text-sm text-black/50">{vehicles.length} shown</p>
+                <h3 className="font-display text-2xl font-bold text-ink sm:text-3xl">
+                  Available vehicles
+                </h3>
+                <p className="rounded-full bg-fog px-3 py-1 text-sm text-slate">
+                  {vehicles.length} shown
+                </p>
               </div>
 
               {loading ? (
-                <p className="text-black/60">Loading inventory...</p>
+                <p className="text-slate">Loading inventory...</p>
               ) : vehicles.length === 0 ? (
-                <p className="text-black/60">No vehicles found.</p>
+                <div className="surface rounded-xl p-10 text-center">
+                  <p className="font-display text-2xl font-bold text-ink">
+                    Lot is empty
+                  </p>
+                  <p className="mt-2 text-sm text-slate">
+                    {isAdmin
+                      ? "Add a vehicle above to start building inventory."
+                      : "Check back soon or clear your search filters."}
+                  </p>
+                </div>
               ) : (
                 <div className="grid gap-4 md:grid-cols-2">
-                  {vehicles.map((vehicle) => (
+                  {vehicles.map((vehicle, index) => (
                     <article
                       key={vehicle.id}
-                      className="border border-black/10 bg-white p-5 space-y-4"
+                      className="vehicle-tile surface animate-fade-up space-y-4 p-5"
+                      style={{ animationDelay: `${Math.min(index, 6) * 40}ms` }}
                     >
                       <div className="flex items-start justify-between gap-3">
                         <div>
-                          <h3 className="font-serif text-2xl">
-                            {vehicle.make} {vehicle.model}
-                          </h3>
-                          <p className="text-sm text-black/50">
+                          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-accent">
                             {vehicle.category}
                           </p>
+                          <h4 className="font-display mt-1 text-2xl font-bold text-ink sm:text-3xl">
+                            {vehicle.make} {vehicle.model}
+                          </h4>
                         </div>
-                        <p className="text-lg font-semibold">
+                        <p className="rounded-md bg-ink px-2.5 py-1 text-sm font-bold text-white">
                           ${vehicle.price.toLocaleString()}
                         </p>
                       </div>
 
-                      <p className="text-sm">
-                        In stock:{" "}
-                        <span className="font-medium">{vehicle.quantity}</span>
-                      </p>
+                      <div className="space-y-2">
+                        <div className="flex items-center justify-between text-sm">
+                          <p className="text-slate">
+                            In stock:{" "}
+                            <span className="font-semibold text-ink">
+                              {vehicle.quantity}
+                            </span>
+                          </p>
+                          {vehicle.quantity === 0 ? (
+                            <span className="text-xs font-semibold uppercase tracking-wide text-danger">
+                              Out of stock
+                            </span>
+                          ) : null}
+                        </div>
+                        <div className="stock-bar">
+                          <span
+                            style={{
+                              width:
+                                vehicle.quantity === 0
+                                  ? "0%"
+                                  : `${stockPercent(vehicle.quantity)}%`,
+                              background:
+                                vehicle.quantity === 0
+                                  ? "transparent"
+                                  : undefined,
+                            }}
+                          />
+                        </div>
+                      </div>
 
-                      <div className="flex flex-wrap gap-2">
+                      <div className="flex flex-wrap gap-2 border-t border-line pt-4">
                         <button
                           disabled={vehicle.quantity === 0}
                           onClick={() => void handlePurchase(vehicle.id)}
-                          className="bg-[#10141c] text-white px-4 py-2 disabled:opacity-40 disabled:cursor-not-allowed hover:bg-[#1c2433]"
+                          className="btn-ink"
                         >
                           Purchase
                         </button>
@@ -424,17 +511,17 @@ export function DashboardPage() {
                           <>
                             <button
                               onClick={() => startEdit(vehicle)}
-                              className="border border-black/15 px-4 py-2 hover:bg-[#e8edf4]"
+                              className="btn-ghost"
                             >
                               Edit
                             </button>
                             <button
                               onClick={() => void handleDelete(vehicle.id)}
-                              className="border border-red-300 text-red-700 px-4 py-2 hover:bg-red-50"
+                              className="rounded-md border border-red-200 px-4 py-2 text-danger hover:bg-red-50"
                             >
                               Delete
                             </button>
-                            <div className="flex gap-2 items-center">
+                            <div className="flex items-center gap-2">
                               <input
                                 type="number"
                                 min={1}
@@ -446,11 +533,11 @@ export function DashboardPage() {
                                     [vehicle.id]: Number(e.target.value),
                                   })
                                 }
-                                className="w-20 border border-black/10 px-2 py-2"
+                                className="input-field w-20"
                               />
                               <button
                                 onClick={() => void handleRestock(vehicle.id)}
-                                className="border border-black/15 px-3 py-2 hover:bg-[#e8edf4]"
+                                className="btn-ghost"
                               >
                                 Restock
                               </button>
@@ -465,33 +552,46 @@ export function DashboardPage() {
             </section>
           </>
         ) : (
-          <section className="space-y-4">
-            <div className="flex items-end justify-between gap-4">
-              <h2 className="font-serif text-3xl">My purchases</h2>
-              <p className="text-sm text-black/50">{purchases.length} shown</p>
-            </div>
-
+          <section className="animate-fade-up space-y-4">
             {loading ? (
-              <p className="text-black/60">Loading purchases...</p>
+              <p className="text-slate">Loading purchases...</p>
             ) : purchases.length === 0 ? (
-              <p className="text-black/60">
-                No purchases yet. Buy a vehicle from Inventory.
-              </p>
+              <div className="surface rounded-xl p-10 text-center">
+                <p className="font-display text-2xl font-bold text-ink">
+                  No purchases yet
+                </p>
+                <p className="mt-2 text-sm text-slate">
+                  Buy a vehicle from Inventory to see it listed here.
+                </p>
+                <button
+                  type="button"
+                  onClick={() => setView("inventory")}
+                  className="btn-primary mt-5"
+                >
+                  Browse inventory
+                </button>
+              </div>
             ) : (
               <div className="grid gap-4 md:grid-cols-2">
-                {purchases.map((purchase) => (
+                {purchases.map((purchase, index) => (
                   <article
                     key={purchase.id}
-                    className="border border-black/10 bg-white p-5 space-y-2"
+                    className="vehicle-tile surface animate-fade-up space-y-2 p-5"
+                    style={{ animationDelay: `${Math.min(index, 6) * 40}ms` }}
                   >
-                    <h3 className="font-serif text-2xl">
+                    <p className="text-xs font-semibold uppercase tracking-[0.2em] text-accent">
+                      {purchase.category}
+                    </p>
+                    <h3 className="font-display text-2xl font-bold text-ink sm:text-3xl">
                       {purchase.make} {purchase.model}
                     </h3>
-                    <p className="text-sm text-black/50">{purchase.category}</p>
-                    <p className="text-lg font-semibold">
+                    <p className="text-sm text-slate">
+                      Bought by {purchase.buyerName} ({purchase.buyerEmail})
+                    </p>
+                    <p className="text-lg font-bold text-ink">
                       ${purchase.price.toLocaleString()}
                     </p>
-                    <p className="text-sm text-black/60">
+                    <p className="text-sm text-slate">
                       Purchased on{" "}
                       {new Date(purchase.purchasedAt).toLocaleString()}
                     </p>

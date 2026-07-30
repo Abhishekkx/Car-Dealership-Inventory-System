@@ -2,6 +2,8 @@ import mongoose, { Document, Schema } from "mongoose";
 
 export interface IPurchase extends Document {
   userId: string;
+  buyerName: string;
+  buyerEmail: string;
   vehicleId: string;
   make: string;
   model: string;
@@ -12,6 +14,8 @@ export interface IPurchase extends Document {
 
 const purchaseSchema = new Schema<IPurchase>({
   userId: { type: String, required: true, index: true },
+  buyerName: { type: String, required: true, trim: true },
+  buyerEmail: { type: String, required: true, lowercase: true, trim: true },
   vehicleId: { type: String, required: true },
   make: { type: String, required: true },
   model: { type: String, required: true },

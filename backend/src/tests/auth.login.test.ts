@@ -26,6 +26,7 @@ describe("POST /api/auth/login", () => {
     }
 
     await request(app).post("/api/auth/register").send({
+      name: "Buyer One",
       email: "buyer@example.com",
       password: "password123",
     });

@@ -30,6 +30,7 @@ describe("Role-based access", () => {
     }
 
     await request(app).post("/api/auth/register").send({
+      name: "Buyer One",
       email: "buyer@example.com",
       password: "password123",
     });
@@ -41,6 +42,7 @@ describe("Role-based access", () => {
     expect(userLogin.body.user.role).toBe("user");
 
     await request(app).post("/api/auth/register").send({
+      name: "Admin User",
       email: "admin@example.com",
       password: "password123",
     });

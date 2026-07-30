@@ -3,6 +3,7 @@ import { IUser } from "../models/User";
 
 interface TokenPayload {
   id: string;
+  name: string;
   email: string;
   role: string;
 }
@@ -15,6 +16,7 @@ export function signToken(user: IUser): string {
 
   const payload: TokenPayload = {
     id: user.id,
+    name: user.name || user.email.split("@")[0],
     email: user.email,
     role: user.role,
   };

@@ -4,6 +4,7 @@ export type UserRole = "user" | "admin";
 
 export interface User {
   id: string;
+  name: string;
   email: string;
   role: UserRole;
 }
@@ -35,6 +36,9 @@ export interface SearchParams {
 
 export interface Purchase {
   id: string;
+  userId: string;
+  buyerName: string;
+  buyerEmail: string;
   vehicleId: string;
   make: string;
   model: string;
@@ -74,10 +78,10 @@ async function request<T>(
 }
 
 export const api = {
-  register(email: string, password: string) {
+  register(name: string, email: string, password: string) {
     return request<{ user: User }>("/auth/register", {
       method: "POST",
-      body: JSON.stringify({ email, password }),
+      body: JSON.stringify({ name, email, password }),
     });
   },
 

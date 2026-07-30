@@ -26,12 +26,14 @@ describe("POST /api/auth/register", () => {
 
   it("registers a new user and returns 201", async () => {
     const response = await request(app).post("/api/auth/register").send({
+      name: "Buyer One",
       email: "buyer@example.com",
       password: "password123",
     });
 
     expect(response.status).toBe(201);
     expect(response.body.user).toMatchObject({
+      name: "Buyer One",
       email: "buyer@example.com",
       role: "user",
     });
@@ -39,8 +41,19 @@ describe("POST /api/auth/register", () => {
     expect(response.body.user).not.toHaveProperty("password");
   });
 
+  it("rejects registration when name is missing", async () => {
+    const response = await request(app).post("/api/auth/register").send({
+      email: "buyer@example.com",
+      password: "password123",
+    });
+
+    expect(response.status).toBe(400);
+    expect(response.body).toHaveProperty("message");
+  });
+
   it("rejects registration when email is missing", async () => {
     const response = await request(app).post("/api/auth/register").send({
+      name: "Buyer One",
       password: "password123",
     });
 
@@ -50,6 +63,7 @@ describe("POST /api/auth/register", () => {
 
   it("rejects registration when password is missing", async () => {
     const response = await request(app).post("/api/auth/register").send({
+      name: "Buyer One",
       email: "buyer@example.com",
     });
 
@@ -59,11 +73,13 @@ describe("POST /api/auth/register", () => {
 
   it("rejects duplicate email registration", async () => {
     await request(app).post("/api/auth/register").send({
+      name: "Buyer One",
       email: "buyer@example.com",
       password: "password123",
     });
 
     const response = await request(app).post("/api/auth/register").send({
+      name: "Buyer Two",
       email: "buyer@example.com",
       password: "password123",
     });

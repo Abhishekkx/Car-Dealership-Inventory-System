@@ -7,6 +7,7 @@ import { User } from "../models/User";
 
 async function getAdminToken() {
   await request(app).post("/api/auth/register").send({
+    name: "Admin User",
     email: "admin@example.com",
     password: "password123",
   });

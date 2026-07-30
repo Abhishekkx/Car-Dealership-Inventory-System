@@ -5,10 +5,10 @@ import { signToken } from "../utils/jwt";
 
 export async function register(req: Request, res: Response): Promise<void> {
   try {
-    const { email, password } = req.body;
+    const { name, email, password } = req.body;
 
-    if (!email || !password) {
-      res.status(400).json({ message: "Email and password are required" });
+    if (!name || !email || !password) {
+      res.status(400).json({ message: "Name, email, and password are required" });
       return;
     }
 
@@ -20,6 +20,7 @@ export async function register(req: Request, res: Response): Promise<void> {
 
     const hashedPassword = await bcrypt.hash(password, 10);
     const user = await User.create({
+      name: name.trim(),
       email: email.toLowerCase(),
       password: hashedPassword,
       role: "user",
@@ -28,6 +29,7 @@ export async function register(req: Request, res: Response): Promise<void> {
     res.status(201).json({
       user: {
         id: user.id,
+        name: user.name,
         email: user.email,
         role: user.role,
       },
@@ -64,6 +66,7 @@ export async function login(req: Request, res: Response): Promise<void> {
       token,
       user: {
         id: user.id,
+        name: user.name || user.email.split("@")[0],
         email: user.email,
         role: user.role,
       },

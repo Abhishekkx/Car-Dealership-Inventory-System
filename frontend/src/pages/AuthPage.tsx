@@ -4,6 +4,7 @@ import { useAuth } from "../services/auth";
 export function AuthPage() {
   const { login, register } = useAuth();
   const [mode, setMode] = useState<"login" | "register">("login");
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -19,7 +20,7 @@ export function AuthPage() {
       if (mode === "login") {
         await login(email, password);
       } else {
-        await register(email, password);
+        await register(name, email, password);
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : "Something went wrong");
@@ -29,54 +30,79 @@ export function AuthPage() {
   }
 
   return (
-    <div className="min-h-screen grid lg:grid-cols-2">
-      <section className="relative hidden lg:flex flex-col justify-between bg-[#10141c] text-white p-12 overflow-hidden">
+    <div className="min-h-screen grid lg:grid-cols-[1.15fr_0.85fr]">
+      <section className="relative min-h-[44vh] lg:min-h-screen overflow-hidden bg-ink text-white">
         <div
-          className="absolute inset-0 opacity-45"
+          className="absolute inset-0 scale-105"
           style={{
             backgroundImage:
-              "linear-gradient(135deg, rgba(196,92,38,0.5), transparent 55%), url('https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?auto=format&fit=crop&w=1600&q=80')",
+              "linear-gradient(155deg, rgba(11,31,51,0.5) 8%, rgba(11,31,51,0.88) 72%), url('https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=1800&q=80')",
             backgroundSize: "cover",
             backgroundPosition: "center",
           }}
         />
-        <div className="relative z-10">
-          <p className="text-sm uppercase tracking-[0.3em] text-white/70">
-            Inventory System
-          </p>
-          <h1 className="mt-6 font-serif text-5xl leading-none">
-            Car Dealership
-          </h1>
+        <div className="hero-glow absolute -left-20 top-24 h-64 w-64 rounded-full bg-accent/30 blur-3xl" />
+        <div className="hero-glow absolute bottom-16 right-0 h-72 w-72 rounded-full bg-teal-300/20 blur-3xl [animation-delay:1.5s]" />
+
+        <div className="relative z-10 flex h-full flex-col justify-center p-8 sm:p-12 lg:p-16">
+          <div className="animate-fade-up max-w-2xl">
+            <p className="text-xs font-semibold uppercase tracking-[0.28em] text-accent">
+              Dealership workspace
+            </p>
+            <h1 className="font-display mt-5 text-4xl leading-[1.1] font-semibold sm:text-5xl lg:text-6xl">
+              Car Dealership Inventory System
+            </h1>
+          </div>
         </div>
-        <p className="relative z-10 max-w-md text-lg text-white/80">
-          Sign in to manage stock, search vehicles, and complete purchases.
-        </p>
       </section>
 
-      <section className="flex items-center justify-center p-6 sm:p-10 bg-[#f4f7fb]">
-        <form onSubmit={handleSubmit} className="w-full max-w-md space-y-6">
+      <section className="relative flex items-center justify-center px-5 py-10 sm:px-10">
+        <div className="pointer-events-none absolute inset-x-0 top-0 h-40 bg-gradient-to-b from-accent/10 to-transparent" />
+        <form
+          onSubmit={handleSubmit}
+          className="animate-fade-up surface relative w-full max-w-md space-y-6 rounded-xl p-7 sm:p-9"
+        >
           <div>
-            <p className="text-sm uppercase tracking-[0.25em] text-[#c45c26]">
-              {mode === "login" ? "Welcome back" : "Create access"}
+            <p className="text-xs font-semibold uppercase tracking-[0.24em] text-accent">
+              {mode === "login" ? "Welcome back" : "Get started"}
             </p>
-            <h2 className="mt-2 font-serif text-4xl text-[#10141c]">
-              {mode === "login" ? "Sign in" : "Register"}
+            <h2 className="font-display mt-2 text-3xl font-bold text-ink sm:text-4xl">
+              {mode === "login" ? "Sign in" : "Create account"}
             </h2>
+            <p className="mt-2 text-sm text-slate">
+              Access inventory and purchase tools with your account.
+            </p>
           </div>
 
+          {mode === "register" ? (
+            <label className="block space-y-2">
+              <span className="text-sm font-medium text-steel">Full name</span>
+              <input
+                type="text"
+                required
+                minLength={2}
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                className="input-field"
+                placeholder="Your name"
+              />
+            </label>
+          ) : null}
+
           <label className="block space-y-2">
-            <span className="text-sm font-medium text-[#1c2433]">Email</span>
+            <span className="text-sm font-medium text-steel">Email</span>
             <input
               type="email"
               required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full border border-black/10 bg-white px-4 py-3 outline-none focus:border-[#c45c26]"
+              className="input-field"
+              placeholder="you@email.com"
             />
           </label>
 
           <label className="block space-y-2">
-            <span className="text-sm font-medium text-[#1c2433]">Password</span>
+            <span className="text-sm font-medium text-steel">Password</span>
             <div className="relative">
               <input
                 type={showPassword ? "text" : "password"}
@@ -84,12 +110,13 @@ export function AuthPage() {
                 minLength={6}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full border border-black/10 bg-white px-4 py-3 pr-12 outline-none focus:border-[#c45c26]"
+                className="input-field pr-12"
+                placeholder="At least 6 characters"
               />
               <button
                 type="button"
                 onClick={() => setShowPassword((prev) => !prev)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-[#1c2433]/60 hover:text-[#1c2433]"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate hover:text-steel"
                 aria-label={showPassword ? "Hide password" : "Show password"}
               >
                 {showPassword ? (
@@ -130,25 +157,32 @@ export function AuthPage() {
           </label>
 
           {error ? (
-            <p className="text-sm text-red-700 bg-red-50 px-3 py-2">{error}</p>
+            <p className="animate-fade-in rounded-md bg-red-50 px-3 py-2 text-sm text-danger">
+              {error}
+            </p>
           ) : null}
 
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-[#c45c26] hover:bg-[#9a4518] text-white py-3 font-medium transition disabled:opacity-60"
+            className="btn-primary w-full disabled:opacity-60"
           >
-            {loading ? "Please wait..." : mode === "login" ? "Login" : "Register"}
+            {loading
+              ? "Please wait..."
+              : mode === "login"
+                ? "Login"
+                : "Create account"}
           </button>
 
-          <p className="text-sm text-[#1c2433]/70">
+          <p className="text-sm text-slate">
             {mode === "login" ? "Need an account?" : "Already registered?"}{" "}
             <button
               type="button"
-              className="text-[#c45c26] font-medium underline-offset-4 hover:underline"
+              className="font-semibold text-accent underline-offset-4 hover:underline"
               onClick={() => {
                 setMode(mode === "login" ? "register" : "login");
                 setError("");
+                setName("");
               }}
             >
               {mode === "login" ? "Register" : "Login"}
