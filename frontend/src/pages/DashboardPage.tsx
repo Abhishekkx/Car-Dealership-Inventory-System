@@ -416,7 +416,7 @@ export function DashboardPage() {
                   className="input-field"
                 />
                 <input
-                  placeholder="Min price"
+                  placeholder="Min price (₹)"
                   type="number"
                   value={filters.minPrice}
                   onChange={(e) =>
@@ -425,7 +425,7 @@ export function DashboardPage() {
                   className="input-field"
                 />
                 <input
-                  placeholder="Max price"
+                  placeholder="Max price (₹)"
                   type="number"
                   value={filters.maxPrice}
                   onChange={(e) =>
@@ -505,7 +505,7 @@ export function DashboardPage() {
                     type="number"
                     min={0}
                     step="1"
-                    placeholder="Price ($)"
+                    placeholder="Price (₹)"
                     value={form.price}
                     onChange={(e) =>
                       setForm({ ...form, price: e.target.value })
@@ -593,7 +593,7 @@ export function DashboardPage() {
                           </h4>
                         </div>
                         <p className="rounded-lg bg-ink px-2.5 py-1 text-sm font-bold text-white">
-                          ${vehicle.price.toLocaleString()}
+                          ₹{vehicle.price.toLocaleString("en-IN")}
                         </p>
                       </div>
 
@@ -741,7 +741,7 @@ export function DashboardPage() {
                         </h3>
                       </div>
                       <p className="rounded-lg bg-ink px-2.5 py-1 text-sm font-bold text-white">
-                        ${purchase.price.toLocaleString()}
+                        ₹{purchase.price.toLocaleString("en-IN")}
                       </p>
                     </div>
                     <div className="space-y-1.5 border-t border-line pt-3 text-sm text-slate">
