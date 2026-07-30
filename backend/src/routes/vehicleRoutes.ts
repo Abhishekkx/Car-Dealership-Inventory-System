@@ -3,6 +3,8 @@ import {
   createVehicle,
   deleteVehicle,
   listVehicles,
+  purchaseVehicle,
+  restockVehicle,
   searchVehicles,
   updateVehicle,
 } from "../controllers/vehicleController";
@@ -17,5 +19,7 @@ vehicleRouter.get("/", listVehicles);
 vehicleRouter.get("/search", searchVehicles);
 vehicleRouter.put("/:id", updateVehicle);
 vehicleRouter.delete("/:id", requireAdmin, deleteVehicle);
+vehicleRouter.post("/:id/purchase", purchaseVehicle);
+vehicleRouter.post("/:id/restock", requireAdmin, restockVehicle);
 
 export default vehicleRouter;

@@ -147,3 +147,57 @@ export async function deleteVehicle(
     res.status(500).json({ message: "Failed to delete vehicle" });
   }
 }
+
+export async function purchaseVehicle(
+  req: AuthenticatedRequest,
+  res: Response
+): Promise<void> {
+  try {
+    const vehicle = await Vehicle.findById(req.params.id);
+
+    if (!vehicle) {
+      res.status(404).json({ message: "Vehicle not found" });
+      return;
+    }
+
+    if (vehicle.quantity <= 0) {
+      res.status(400).json({ message: "Vehicle is out of stock" });
+      return;
+    }
+
+    vehicle.quantity -= 1;
+    await vehicle.save();
+
+    res.status(200).json({ vehicle: toVehicleResponse(vehicle) });
+  } catch {
+    res.status(500).json({ message: "Failed to purchase vehicle" });
+  }
+}
+
+export async function restockVehicle(
+  req: AuthenticatedRequest,
+  res: Response
+): Promise<void> {
+  try {
+    const { quantity } = req.body;
+
+    if (quantity === undefined || Number(quantity) <= 0) {
+      res.status(400).json({ message: "A positive quantity is required" });
+      return;
+    }
+
+    const vehicle = await Vehicle.findById(req.params.id);
+
+    if (!vehicle) {
+      res.status(404).json({ message: "Vehicle not found" });
+      return;
+    }
+
+    vehicle.quantity += Number(quantity);
+    await vehicle.save();
+
+    res.status(200).json({ vehicle: toVehicleResponse(vehicle) });
+  } catch {
+    res.status(500).json({ message: "Failed to restock vehicle" });
+  }
+}
