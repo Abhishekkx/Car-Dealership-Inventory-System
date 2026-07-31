@@ -1,5 +1,8 @@
 # Car Dealership Inventory System
 ## Link to live project : https://car-dealership-inventory-system-75n.vercel.app/
+
+### Admin credentials, Email : admin@carinventoy.com, Password : admin123
+### Demo user credentials , Email : aabhishekkpers@gmail.com , Password : Abhi123
 ## Project overview
 
 This is a full-stack **Car Dealership Inventory System** built as a TDD kata. It lets authenticated users browse and search vehicles, purchase stock when available, and lets admins manage inventory (add, update, delete, restock).
