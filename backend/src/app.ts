@@ -8,6 +8,10 @@ import mongoose from "mongoose";
 import authRouter from "./routes/authRoutes";
 import vehicleRouter from "./routes/vehicleRoutes";
 import purchaseRouter from "./routes/purchaseRoutes";
+import {
+  dealershipBusinessHours,
+  isBusinessOpen,
+} from "./utils/buisnesshours";
 
 const app = express();
 
@@ -23,6 +27,14 @@ app.get("/api/health", (_req, res) => {
   res.status(200).json({
     status: "ok",
     database: dbStatus,
+  });
+});
+
+/** Returns the published schedule and the dealership's current availability. */
+app.get("/api/business-hours", (_req, res) => {
+  res.status(200).json({
+    isOpen: isBusinessOpen(),
+    hours: dealershipBusinessHours,
   });
 });
 
